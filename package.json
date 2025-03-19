@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "dependencies": {
+    "@vinxi/server-functions": "^0.5.0",
+    "vinxi": "^0.5.1"
+  }
+}

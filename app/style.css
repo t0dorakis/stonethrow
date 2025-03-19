@@ -1,0 +1,25 @@
+body {
+  background: greenyellow;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+h1 {
+  color: black;
+  font-size: xxx-large;
+  font-family: sans-serif;
+  font-weight: 400;
+  letter-spacing: 6px;
+  margin: auto;
+}
+
+.declarative-button {
+  background: transparent;
+  border: 2px solid black;
+  color: black;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-family: sans-serif;
+}
