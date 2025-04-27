@@ -4,9 +4,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".output",
   "framework": null,
-  "functions": {
-    "server/index.mjs": {
-      "maxDuration": 30
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node"
     }
-  }
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "/" }]
 }
