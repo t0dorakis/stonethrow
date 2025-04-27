@@ -1,9 +1,9 @@
 /// <reference types="vinxi/types/server" />
 import { defineWebSocket, eventHandler } from "vinxi/http";
-import { getComponentsToRegister } from "./serverRegistryUtils";
 import { getManifest } from "vinxi/manifest";
 import h from "../lib/JSX"; // Explicitly import your JSX factory
-import homePage from "./components/pages/home";
+import homePage from "./pages/home";
+import Stone from "../lib/Stone";
 
 export default eventHandler({
   handler: async (event) => {
@@ -42,7 +42,7 @@ export default eventHandler({
           })}
 
           {/* Directly include your client entry in development mode */}
-          {isDev && <script type="module" src={clientEntry}></script>}
+          {isDev && <script type="module" src={clientEntry} defer></script>}
 
           <link rel="stylesheet" href="/app/style.css"></link>
 
@@ -51,7 +51,7 @@ export default eventHandler({
             {`
               window.FRAMEWORK = {
                 componentsToRegister: ${JSON.stringify(
-                  getComponentsToRegister()
+                  Stone.getComponentsToRegister()
                 )}
               };
             `}

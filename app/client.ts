@@ -1,12 +1,8 @@
-import { initializeCustomElements } from "./customElementRegistry";
-import "./style.css"; // Import CSS directly for bundling
+import Stone from "../lib/Stone";
+import { clientRegistry } from "./clientRegistry";
 
 // Initialize all custom elements when the DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   console.log("DOM ready, initializing custom elements");
-  initializeCustomElements();
+  Stone.init(clientRegistry);
 });
-
-console.log("JS Client loaded");
-
-// Additional client-side initialization code
