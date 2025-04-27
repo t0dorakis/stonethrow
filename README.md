@@ -8,6 +8,49 @@ This is a framework for building web applications using custom web components wi
 - **Progressive enhancement** with light DOM custom elements (not shadow DOM)
 - **Component registry** to transfer component information from server to client
 
+## Framework Roadmap
+
+- [x] **Server-side Rendered Light DOM Web Components**
+
+  - Fully functional SSR with progressive enhancement
+
+- [x] **Component Composition**
+
+  - Components that compose and nest within each other
+
+- [x] **State Management with Signals**
+
+  - Reactive state with cross-component communication
+
+- [ ] **Page Routing**
+
+  - Server-side routing with no client-side navigation
+  - Route parameters and dynamic routes
+  - Nested routes and layouts
+  - Leveraging Vinxi for auto-generating file-based routes
+
+- [ ] **Async Component Loading**
+
+  - On-demand loading to reduce bundle size
+
+- [ ] **Streamlined Component Creation**
+
+  - Less boilerplate for defining components
+  - Simplified API for common patterns
+  - Auto-registration of components
+
+- [ ] **Component Abstractions**
+
+  - Higher-level patterns and reusable logic
+
+- [ ] **Developer Experience**
+
+  - Simplified configuration and better abstractions
+  - Better error messages and debugging
+
+- [ ] **Testing**
+  - Unit and integration tests for basic functionality
+
 ## Key Learnings
 
 ### Client-Side Asset Loading
@@ -182,3 +225,7 @@ npx vinxi dev
 - [Vinxi Documentation](https://vinxi.vercel.app/)
 - [Vinxi Examples](https://github.com/nksaraf/vinxi/tree/main/examples)
 - [Web Components - MDN](https://developer.mozilla.org/en-US/docs/Web/Web_Components)
+
+## Acknowledgments
+
+Special thanks to [Robin Löffel](https://github.com/robinloeffel) for the [sgnls](https://github.com/robinloeffel/sgnls) library that powers our reactive state management.
