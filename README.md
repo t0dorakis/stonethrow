@@ -1,3 +1,5 @@
+[![Biome](https://img.shields.io/badge/Formatted_with-Biome-60a5fa?style=flat&logo=biome)](https://biomejs.dev/) ![Vercel Deploy](https://deploy-badge.vercel.app/vercel/stone-throw)
+
 # Custom Light DOM Web Component Framework with Vinxi
 
 This is a framework for building web applications using custom web components with server-side rendering (SSR) and progressive enhancement, powered by [Vinxi](https://github.com/nksaraf/vinxi).

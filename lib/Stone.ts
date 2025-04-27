@@ -23,15 +23,17 @@ function initializeCustomElements(
   const serverRegistry = _getHandedOverRegistry(); // this is an array of component names
 
   console.log("initializeCustomElements");
-  serverRegistry?.forEach((componentName) => {
-    const moduleInit = clientRegistry.get(componentName);
-    if (moduleInit) {
-      console.log("initializing module", componentName);
-      moduleInit();
-    } else {
-      console.warn(`Module not found for component: ${componentName}`);
+  if (serverRegistry) {
+    for (const componentName of serverRegistry) {
+      const moduleInit = clientRegistry.get(componentName);
+      if (moduleInit) {
+        console.log("initializing module", componentName);
+        moduleInit();
+      } else {
+        console.warn(`Module not found for component: ${componentName}`);
+      }
     }
-  });
+  }
 }
 
 /**

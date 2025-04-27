@@ -14,10 +14,10 @@ export const module = () => {
   class CounterButtonElement extends HTMLElement {
     private button: HTMLButtonElement | null = null;
 
-    constructor() {
-      super();
-      // Don't use shadow DOM to enable progressive enhancement
-    }
+    // constructor() {
+    //   super();
+    //   // Don't use shadow DOM to enable progressive enhancement
+    // }
 
     connectedCallback() {
       // Get the button element

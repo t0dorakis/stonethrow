@@ -33,12 +33,12 @@ export default eventHandler({
           {/* Include all client assets (CSS, preloads, etc.) */}
           {clientAssets.map((asset) => {
             if (asset.tag === "link" && asset.attrs?.href) {
-              return <link key={asset.attrs.href} {...asset.attrs}></link>;
+              return <link key={asset.attrs.href} {...asset.attrs} />;
             }
             return null;
           })}
 
-          <script type="module" src={clientEntry} defer></script>
+          <script type="module" src={clientEntry} defer />
 
           {/* Hand the serverside registry keys over to the client */}
           <script type="module">

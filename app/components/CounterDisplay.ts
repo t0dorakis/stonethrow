@@ -14,10 +14,10 @@ export const module = () => {
   class CounterDisplayElement extends HTMLElement {
     private countElement: HTMLSpanElement | null = null;
 
-    constructor() {
-      super();
-      // Don't use shadow DOM to enable progressive enhancement
-    }
+    // constructor() {
+    //   super();
+    //   // Don't use shadow DOM to enable progressive enhancement
+    // }
 
     connectedCallback() {
       // Get the count span element

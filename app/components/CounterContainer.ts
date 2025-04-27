@@ -21,10 +21,10 @@ const CounterContainer = () => {
 
 export const module = () => {
   class CounterContainer extends HTMLElement {
-    constructor() {
-      super();
-      // Don't use shadow DOM to enable progressive enhancement
-    }
+    // constructor() {
+    //   super();
+    //   // Don't use shadow DOM to enable progressive enhancement
+    // }
 
     connectedCallback() {
       console.log("Counter container initialized");
