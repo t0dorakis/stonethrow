@@ -1,6 +1,5 @@
 // Server-side rendered custom element button that changes its color on click
-
-const SSR = () => {
+const customElementButton = () => {
   // Return styled HTML that matches what JavaScript would render
   return `
     <custom-element-button>
@@ -71,4 +70,4 @@ export const module = () => {
 };
 
 // For server-side rendering only
-export default SSR;
+export default customElementButton;

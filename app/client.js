@@ -1,14 +1,5 @@
-// import "./components/helloWorld";
-import { module as declarativeButtonModule } from "./components/declarativeButton";
-import { module as customElementButtonModule } from "./components/customElementButton";
-import {
-  initializeCustomElements,
-  registerCustomElement,
-} from "./components/customElementRegistry";
-
-// Explicitly register all components used in your application
-registerCustomElement("custom-element-button", customElementButtonModule);
-registerCustomElement("declarative-button", declarativeButtonModule);
+import { initializeCustomElements } from "./components/customElementRegistry";
+import "./style.css"; // Import CSS directly for bundling
 
 // Initialize all custom elements when the DOM is ready
 document.addEventListener("DOMContentLoaded", () => {

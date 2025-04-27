@@ -3,6 +3,9 @@ import { createApp } from "vinxi";
 import FrameWorkPlugin from "./framework.plugin.ts";
 
 export default createApp({
+  server: {
+    preset: "node-server"
+  },
   routers: [
     {
       name: "public",
@@ -14,15 +17,25 @@ export default createApp({
       name: "client",
       type: "client",
       handler: "./app/client.js",
-      base: "/_build", // This ensures client assets are served from /_build
+      base: "/_build",
+      target: "browser",
       plugins: () => [FrameWorkPlugin()],
+      build: {
+        target: "browser",
+        outDir: "./.vinxi/build/client",
+        rollupOptions: {
+          output: {
+            manualChunks: undefined,
+          },
+        },
+      },
     },
     {
       name: "ssr",
       type: "http",
-      // base: "/",
-      plugins: () => [FrameWorkPlugin()],
+      target: "server",
       handler: "./app/server.tsx",
+      plugins: () => [FrameWorkPlugin()],
     },
     // serverFunctions.router({
     //   middleware: "./app/middleware.tsx",

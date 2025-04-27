@@ -2,3 +2,4 @@
 .env
 .vinxi
 node_modules
+.DS_Store
