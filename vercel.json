@@ -6,7 +6,7 @@
   "framework": null,
   "functions": {
     "server/index.mjs": {
-      "runtime": "nodejs22.x"
+      "maxDuration": 30
     }
   }
 }
