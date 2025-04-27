@@ -1,4 +1,4 @@
-import { initializeCustomElements } from "./components/customElementRegistry";
+import { initializeCustomElements } from "./customElementRegistry";
 import "./style.css"; // Import CSS directly for bundling
 
 // Initialize all custom elements when the DOM is ready
