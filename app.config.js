@@ -4,7 +4,7 @@ import FrameWorkPlugin from "./framework.plugin.ts";
 
 export default createApp({
   server: {
-    preset: "node-server",
+    preset: "vercel", //  https://nitro.build/deploy/providers/vercel
   },
   routers: [
     {
