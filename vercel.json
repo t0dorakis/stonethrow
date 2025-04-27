@@ -4,5 +4,9 @@
   "buildCommand": "npm run build",
   "outputDirectory": ".output",
   "framework": null,
-  "rewrites": [{ "source": "/(.*)", "destination": "/server/index.mjs" }]
+  "functions": {
+    "server/index.mjs": {
+      "runtime": "nodejs22.x"
+    }
+  }
 }
