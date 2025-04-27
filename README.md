@@ -2,6 +2,19 @@
 
 This is a framework for building web applications using custom web components with server-side rendering (SSR) and progressive enhancement, powered by [Vinxi](https://github.com/nksaraf/vinxi).
 
+## Development
+
+```bash
+npm run dev
+```
+
+## Production
+
+```bash
+npm run build
+npm run start
+```
+
 ## Architecture
 
 - **Server-side rendering** of web components using JSX
@@ -199,26 +212,6 @@ When troubleshooting Vinxi applications:
 
 - Pass component registry from server to client using `window.FRAMEWORK`
 - Use a consistent naming convention for components
-
-## Production Mode
-
-When running in production (`vinxi build` and `vinxi start`):
-
-1. Client code is bundled, optimized, and hashed for proper caching
-2. Assets are included in the production manifest
-3. The setup works without the development-only script injections
-4. Server automatically handles routing based on router priorities
-
-## Development Workflow
-
-1. Start the development server:
-
-```bash
-npx vinxi dev
-```
-
-2. The server renders components on the server side
-3. The client adds interactivity through progressive enhancement
 
 ## References
 

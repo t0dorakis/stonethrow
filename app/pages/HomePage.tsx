@@ -2,7 +2,7 @@ import CounterContainer from "../components/CounterContainer";
 import h from "../../lib/JSX"; // Explicitly import your JSX factory TODO: import automatically later
 import Stone from "../../lib/Stone";
 
-const homePage = () => {
+const HomePage = () => {
   return (
     <body>
       <my-component>
@@ -14,4 +14,4 @@ const homePage = () => {
   );
 };
 
-export default homePage;
+export default HomePage;
