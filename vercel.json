@@ -3,6 +3,5 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "framework": null,
-  "installCommand": "npm install",
-  "outputDirectory": ".output"
+  "installCommand": "npm install"
 }

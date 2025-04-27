@@ -1,5 +1,6 @@
 .output
 .env
 .vinxi
+.vercel
 node_modules
 .DS_Store
