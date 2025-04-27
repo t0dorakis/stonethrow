@@ -7,7 +7,7 @@ import { clientRegistry } from "./clientRegistry";
 export function getHandedOverRegistry(): string[] | undefined {
   // get the registry from the window object
   if (typeof window !== "undefined") {
-    return window?.FRAMEWORK?.componentRegistry;
+    return window?.FRAMEWORK?.componentsToRegister;
   }
 }
 
@@ -18,13 +18,13 @@ export function initializeCustomElements(): void {
   const serverRegistry = getHandedOverRegistry(); // this is an array of component names
 
   console.log("initializeCustomElements");
-
   serverRegistry?.forEach((componentName) => {
     const moduleInit = clientRegistry.get(componentName);
-    if (module) {
-      console.log("initializing module", moduleInit);
-
+    if (moduleInit) {
+      console.log("initializing module", componentName);
       moduleInit();
+    } else {
+      console.warn(`Module not found for component: ${componentName}`);
     }
   });
 }

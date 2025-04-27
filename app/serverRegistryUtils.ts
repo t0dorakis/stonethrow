@@ -21,3 +21,10 @@ export function createCustomElement(
   markComponentForRegistration(name);
   return ssrComponent();
 }
+
+/**
+ * This is used on the server-side to get the components to register
+ */
+export function getComponentsToRegister(): string[] {
+  return Array.from(componentsToRegister);
+}

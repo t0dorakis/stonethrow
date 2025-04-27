@@ -1,12 +1,9 @@
 /// <reference types="vinxi/types/server" />
 import { defineWebSocket, eventHandler } from "vinxi/http";
-import {
-  componentsToRegister,
-  createCustomElement,
-} from "./serverRegistryUtils";
+import { getComponentsToRegister } from "./serverRegistryUtils";
 import { getManifest } from "vinxi/manifest";
 import h from "../lib/JSX"; // Explicitly import your JSX factory
-import CustomElementButton from "./components/customElementButton";
+import homePage from "./components/pages/home";
 
 export default eventHandler({
   handler: async (event) => {
@@ -14,7 +11,6 @@ export default eventHandler({
 
     // Find all client assets to include
     const assets = await clientManifest.inputs[clientManifest.handler].assets();
-    console.log("All client assets:", assets);
 
     // In development mode, we need to find the correct client entry
     const isDev = process.env.NODE_ENV !== "production";
@@ -26,20 +22,15 @@ export default eventHandler({
 
     event.node.res.setHeader("Content-Type", "text/html");
 
-    const content = (
-      <body>
-        <my-component>
-          <h1 slot="text">Stone Throw</h1>
-        </my-component>
-        {createCustomElement("custom-element-button", CustomElementButton)}
-      </body>
-    );
+    // for now this needs to be called before the registry is set to the window
+    const page = homePage();
 
     return (
       <html lang="en">
         <head>
           <title>Web Component SSR</title>
           {/* Include all client assets (CSS, preloads, etc.) */}
+          {/* TODO: is this really needed? */}
           {assets.map((asset) => {
             if (asset.tag === "script" && asset.attrs?.src) {
               return <script key={asset.attrs.src} {...asset.attrs}></script>;
@@ -59,12 +50,14 @@ export default eventHandler({
           <script type="module">
             {`
               window.FRAMEWORK = {
-                componentsToRegister: ${JSON.stringify(componentsToRegister)}
+                componentsToRegister: ${JSON.stringify(
+                  getComponentsToRegister()
+                )}
               };
             `}
           </script>
         </head>
-        {content}
+        {page}
       </html>
     );
   },

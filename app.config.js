@@ -4,7 +4,7 @@ import FrameWorkPlugin from "./framework.plugin.ts";
 
 export default createApp({
   server: {
-    preset: "node-server"
+    preset: "node-server",
   },
   routers: [
     {
@@ -16,7 +16,7 @@ export default createApp({
     {
       name: "client",
       type: "client",
-      handler: "./app/client.js",
+      handler: "./app/client.ts",
       base: "/_build",
       target: "browser",
       plugins: () => [FrameWorkPlugin()],

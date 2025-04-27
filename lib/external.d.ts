@@ -4,8 +4,3 @@ declare namespace JSX {
     [elemName: string]: any;
   }
 }
-interface Window {
-  FRAMEWORK?: {
-    componentRegistry?: string[];
-  };
-}
