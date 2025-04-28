@@ -6,8 +6,8 @@
     "start": "vinxi start"
   },
   "dependencies": {
-    "@vinxi/server-functions": "^0.5.0",
-    "vinxi": "^0.5.1"
+    "@vinxi/server-functions": "^0.5.1",
+    "vinxi": "^0.5.6"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4"
