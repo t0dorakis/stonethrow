@@ -224,3 +224,163 @@ When troubleshooting Vinxi applications:
 ## Acknowledgments
 
 Special thanks to [Robin Löffel](https://github.com/robinloeffel) for the [sgnls](https://github.com/robinloeffel/sgnls) library that powers our reactive state management.
+
+# Stone Framework
+
+A lightweight progressive-enhancement framework for building server-first web applications with client-side interactivity.
+
+## Core Concepts
+
+- **Server-first rendering**: Components are rendered on the server and then enhanced on the client
+- **Progressive enhancement**: Works without JavaScript, but gets better with it
+- **Minimal API**: Simple, concise component definitions
+- **Auto-registration**: Components register themselves when used
+- **Per-instance state**: Each component instance maintains its own state
+
+## Component API
+
+Create components with a clean, declarative API:
+
+```typescript
+import { create } from "./lib/Stone";
+
+// The component tag name is derived from the variable name
+// Counter -> <x-counter>, MiniButton -> <mini-button>
+const Counter = create({
+  // Component state (unique for each instance)
+  state: () => ({
+    count: 0,
+    isActive: false,
+  }),
+
+  // Server-side render function (no need to specify component tag)
+  render: (state, props, children) => `
+    <div class="counter">
+      <div>Count: ${state.count.get()}</div>
+      <button>Increment</button>
+      ${children || ""}
+    </div>
+  `,
+
+  // Client-side initialization with instance state
+  init: (element, state) => {
+    const button = element.querySelector("button");
+
+    // React to state changes
+    state.count.effect((newCount) => {
+      console.log(`Count updated to: ${newCount}`);
+    });
+
+    // Update state on events
+    if (button) {
+      button.addEventListener("click", () => {
+        state.count.update((n) => n + 1);
+      });
+    }
+  },
+
+  // Optional cleanup when component is removed
+  cleanup: (element, state) => {
+    // Clean up event listeners, subscriptions, etc.
+  },
+});
+
+// For backward compatibility or explicit naming:
+import { create } from "./lib/Stone";
+
+const ExplicitComponent = create("custom-name", {
+  // Component options...
+});
+```
+
+### Children Support
+
+The framework supports multiple ways to pass children to components:
+
+```typescript
+// Single component as child
+Card({ title: "Single Child" }, Counter());
+
+// Array of components
+Card({ title: "Multiple Children" }, [Counter(), Counter(), Counter()]);
+
+// Mixed content (strings and components)
+Card({ title: "Mixed Content" }, [
+  "<p>Text content</p>",
+  Counter(),
+  "<div class='separator'></div>",
+  Counter(),
+]);
+
+// Dynamic list rendering
+Card(
+  { title: "Dynamic List" },
+  items.map((item) => ItemComponent({ item }))
+);
+
+// Nested components
+Card({ title: "Nested" }, [Card({ title: "Inner Card" }, Counter())]);
+```
+
+### Component Name Rules
+
+Custom element names must follow these rules:
+
+- Must contain a hyphen (-) character
+- Must start with a letter
+
+The framework automatically:
+
+- Derives the component tag name from the variable name (converted to kebab-case)
+- Adds an 'x-' prefix if the name doesn't contain a hyphen
+- Creates per-instance state for each component
+- Wraps your render output with the component tag
+- Registers components when they're used
+- Handles client-side initialization
+
+## Usage in Pages
+
+Use components in your pages:
+
+```tsx
+import h from "../lib/JSX";
+import Counter from "./components/Counter";
+import Card from "./components/Card";
+
+// Components auto-register themselves when used
+export default () => (
+  <body>
+    {/* Basic usage */}
+    {Counter.ssr({ title: "My Counter" })}
+
+    {/* With children */}
+    {Counter.ssr(
+      { title: "Counter with Info" },
+      `
+      <div class="info">Counter info here</div>
+    `
+    )}
+
+    {/* Component composition */}
+    {Card.ssr(
+      { title: "Card Title" },
+      Counter.ssr({ title: "Nested Counter" })
+    )}
+  </body>
+);
+```
+
+## Client Registry
+
+Register components for client-side initialization:
+
+```typescript
+// clientRegistry.ts
+import Counter from "./components/Counter";
+
+export const clientRegistry = new Map([["counter-name", Counter.module]]);
+```
+
+## Examples
+
+See the `app/pages/CleanDemo.tsx` for examples of component usage patterns.
