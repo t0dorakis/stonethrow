@@ -221,6 +221,14 @@ export const create = new Proxy(createComponent, {
         }
         return Reflect.set(obj, prop, value);
       },
+      get(target, prop, receiver) {
+        // Make sure the componentName property is not optimized away in production
+        if (prop === "componentName") {
+          // Force access to prevent removal during minification
+          console.debug("Component name accessed:", target.componentName);
+        }
+        return Reflect.get(target, prop, receiver);
+      },
     });
   },
 });
