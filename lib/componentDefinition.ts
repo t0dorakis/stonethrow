@@ -1,40 +1,11 @@
 import { markComponentForRegistration } from "./registryUtils";
 import signal from "./sgnls";
 import { kebabCase } from "scule";
-
-type Props = Record<string, unknown>;
-type ElementHandler = (
-  element: HTMLElement,
-  state: Record<string, ReturnType<typeof signal>>
-) => void;
-type StateFactory = () => Record<string, unknown>;
-type ComponentOptions = {
-  // Optional explicit name (otherwise derived from assignment)
-  name?: string;
-
-  // Component state factory to create fresh state for each instance
-  state?: StateFactory | Record<string, unknown>;
-
-  /**
-   * Server-side render function with state parameter
-   * @param state - The state of the component
-   * @param props - The props of the component
-   * @param children - The children of the component
-   * @returns The HTML string of the component
-   */
-  render: (
-    state: Record<string, ReturnType<typeof signal>>,
-    props?: Props,
-    children?: string
-  ) => string;
-
-  // Client-side handlers with state parameter
-  init?: ElementHandler;
-  cleanup?: ElementHandler;
-};
-
-// Type for a renderable child
-type Child = string | number | boolean | null | undefined;
+import type {
+  ComponentOptions,
+  Props,
+  ComponentWithInternalProps,
+} from "./types";
 
 /**
  * Validate a custom element name
@@ -140,6 +111,14 @@ export function createComponent(
     return wrapWithTag(renderedContent);
   };
 
+  // Store the component name as a non-enumerable property that won't be mangled
+  Object.defineProperty(Component as ComponentWithInternalProps, "_$$name", {
+    value: name,
+    writable: true,
+    enumerable: false,
+    configurable: false,
+  });
+
   // Add client-side initialization
   Component.module = () => {
     class CustomElement extends HTMLElement {
@@ -176,17 +155,35 @@ export function createComponent(
       }
     }
 
+    // Access the name through the preserved property
+    const componentName =
+      (Component as ComponentWithInternalProps)._$$name || name;
+
     // Register the custom element
-    if (!customElements.get(name)) {
-      customElements.define(name, CustomElement);
+    if (!customElements.get(componentName)) {
+      customElements.define(componentName, CustomElement);
     }
   };
 
   // Expose global state for SSR
   Component.state = globalStateSignals;
 
-  // Component identifier
-  Component.componentName = name;
+  // Component identifier through getter to prevent optimization
+  Object.defineProperty(
+    Component as ComponentWithInternalProps,
+    "componentName",
+    {
+      get: () => {
+        // This forces retention of the name in production builds
+        return (Component as ComponentWithInternalProps)._$$name || name;
+      },
+      set: (value) => {
+        (Component as ComponentWithInternalProps)._$$name = value;
+      },
+      enumerable: true,
+      configurable: true,
+    }
+  );
 
   // Server-side rendering method (alias for the main function)
   Component.ssr = (props?: Props, children?: unknown) => {
@@ -196,7 +193,7 @@ export function createComponent(
   // Store function to update component name during assignment
   Component.__setComponentName = (derivedName: string) => {
     name = validateElementName(kebabCase(derivedName));
-    Component.componentName = name;
+    (Component as ComponentWithInternalProps)._$$name = name;
     return Component;
   };
 
@@ -222,10 +219,13 @@ export const create = new Proxy(createComponent, {
         return Reflect.set(obj, prop, value);
       },
       get(target, prop, receiver) {
-        // Make sure the componentName property is not optimized away in production
-        if (prop === "componentName") {
+        // Make sure properties can't be optimized away in production
+        if (prop === "componentName" || prop === "_$$name") {
           // Force access to prevent removal during minification
-          console.debug("Component name accessed:", target.componentName);
+          const name = target[prop];
+          console.debug(`Component property ${String(prop)} accessed:`, name);
+          // If componentName is accessed, make sure it's not optimized away
+          return name;
         }
         return Reflect.get(target, prop, receiver);
       },

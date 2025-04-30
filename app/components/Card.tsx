@@ -2,10 +2,9 @@ import { create } from "../../lib/Stone";
 import h from "../../lib/JSX";
 
 // Card component that can receive and render children
-// Name will be derived from variable name (Card -> card)
+// Name will be derived from variable name (Card -> x-card)
 const Card = create({
   // No state needed for this component
-
   render: (state, props, children) => {
     const title = (props?.title as string) || "Card";
 
