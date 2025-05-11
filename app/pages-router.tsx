@@ -1,67 +1,49 @@
 import { eventHandler } from "vinxi/http";
-import { getManifest } from "vinxi/manifest";
-import { loadPageComponent } from "../lib/page-loader";
-import Stone from "../lib/Stone";
-import h from "../lib/JSX";
-import NotFoundPage from "./pages/404";
+import routes from "vinxi/routes";
+import type { PageEvent } from "../lib/types";
+import { routerLogger as logger } from "../lib/logging";
+import { renderPage } from "../lib/page-renderer";
+import { handleError } from "../lib/error-handler";
+
+// Define a type for the route structure based on Vinxi's routes
+interface RouteModule {
+  path: string;
+  $page?: {
+    import: () => Promise<{ default: (event: PageEvent) => string }>;
+  };
+}
 
 export default eventHandler({
-	handler: async (event) => {
-		const clientManifest = getManifest("client");
-		const clientAssets =
-			await clientManifest.inputs[clientManifest.handler].assets();
-		const clientEntry =
-			clientManifest.inputs[clientManifest.handler].output.path;
+  handler: async (event: PageEvent) => {
+    try {
+      logger.info("Handling request for path:", event.path);
 
-		// Load the correct page component based on the path
-		const PageComponent = await loadPageComponent(event);
+      // Find matching route
+      const matchedRoute = routes.find((r) => r.path === event.path) as
+        | RouteModule
+        | undefined;
 
-		// Return 404 if page not found
-		if (!PageComponent) {
-			return NotFoundPage(event);
-		}
+      // Handle missing routes with 404
+      if (!matchedRoute || !matchedRoute.$page?.import) {
+        logger.warn(`No valid route found for path: ${event.path}`);
+        return handleError(event, 404);
+      }
 
-		return (
-			<html lang="en">
-				<head>
-					<title>Stone Throw</title>
-					<meta
-						name="description"
-						content="A simple framework for building web components with
-            server-side rendering"
-					/>
-					<meta
-						name="viewport"
-						content="width=device-width, initial-scale=1.0"
-					/>
+      // Import and render the page component
+      const pageModule = await matchedRoute.$page.import();
 
-					{/* Include all client assets (CSS, preloads, etc.) */}
-					{clientAssets.map((asset) => {
-						// bang the style directly into the head
-						if (asset.tag === "style") {
-							return <style>{asset.children}</style>;
-						}
+      if (!pageModule.default) {
+        logger.error(
+          `Component default export not found for path: ${event.path}`
+        );
+        return handleError(event, 404);
+      }
 
-						if (asset.tag === "link" && asset.attrs?.href) {
-							return <link key={asset.attrs.href} {...asset.attrs} />;
-						}
-						return null;
-					})}
-
-					<script type="module" src={clientEntry} defer />
-				</head>
-				{PageComponent(event)}
-				{/* Hand the serverside registry keys over to the client */}
-				<script type="module">
-					{`
-              window.FRAMEWORK = {
-                componentsToRegister: ${JSON.stringify(
-									Stone.getComponentsToRegister(),
-								)}
-              };
-            `}
-				</script>
-			</html>
-		);
-	},
+      // Render the page
+      return await renderPage(pageModule.default, event);
+    } catch (error) {
+      logger.error("Fatal router error:", error);
+      return handleError(event, 500, error);
+    }
+  },
 });

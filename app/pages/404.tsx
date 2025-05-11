@@ -1,19 +1,21 @@
 import type { PageEvent } from "../../lib/types";
 import h from "../../lib/JSX";
 
+/**
+ * Custom 404 page that can be freely customized
+ * Will be rendered inside an HTML document with client assets and framework initialization
+ */
 const NotFoundPage = (event: PageEvent) => {
-  event.node.res.statusCode = 404;
-
   return (
-    <html lang="en">
-      <head>
-        <title>Page Not Found - Stone Throw</title>
-      </head>
-      <body>
+    <body>
+      <div class="error-container">
         <h1>404 - Page Not Found</h1>
-        <p>The page {event.path} does not exist.</p>
-      </body>
-    </html>
+        <p>
+          The page <code>{event.path}</code> does not exist.
+        </p>
+        <a href="/">Return to Home</a>
+      </div>
+    </body>
   );
 };
 

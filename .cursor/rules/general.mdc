@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# General Guidelines for Development
+
+## Feature Implementation
+
+- **Never create unplanned features or components** without explicit request
+- Do not assume what features should be added to the codebase
+- Always ask before implementing any new functionality that wasn't specifically requested
+- Focus exclusively on the requested tasks, even if you think additional features would be beneficial
+
+## Code Modification
+
+- Only modify existing code as requested
+- Don't delete or refactor working code unless explicitly asked
+- When in doubt, ask for clarification rather than making assumptions
+
+## Best Practices
+
+- Follow established patterns in the codebase
+- Maintain consistency with existing code style and architecture
+- Respect the project structure and conventions 
