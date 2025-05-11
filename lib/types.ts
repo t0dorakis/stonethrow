@@ -1,7 +1,8 @@
 import type signal from "./sgnls";
-import type { H3Event } from "h3";
+import type { H3Event, EventHandlerRequest } from "h3";
 
-export type PageEvent = H3Event;
+export type PageEvent = H3Event<EventHandlerRequest>;
+export type PageComponent = (event: PageEvent) => string;
 
 export interface ComponentWithInternalProps {
   (props?: Props, children?: unknown): string;

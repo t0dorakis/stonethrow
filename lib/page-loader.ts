@@ -1,63 +1,184 @@
 import { existsSync } from "node:fs";
-import { resolve, join, dirname } from "node:path";
-import { createRequire } from "node:module";
+import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { H3Event } from "h3";
+import { BaseFileSystemRouter } from "vinxi/fs-router";
+import type { PageComponent, PageEvent } from "./types";
 
-/**
- * Get the project root directory by finding the correct package.json
- * This approach is more reliable when the code is moved to a module
- */
-function getProjectRoot() {
+// Define types for Vinxi router and app objects
+type RouterObject = Record<string, unknown>;
+type AppObject = Record<string, unknown>;
+
+// Find the pages directory
+function getPagesDir(): string | null {
   try {
-    // Start with direct path resolution from current file
+    // Get current file location
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
 
-    // We know this file is in the lib directory, so go up one level
-    const potentialRoot = resolve(__dirname, "..");
+    // Try various potential locations
+    const potentialPaths = [
+      resolve(__dirname, "..", "app", "pages"), // ../app/pages from lib
+      resolve(process.cwd(), "app", "pages"), // CWD/app/pages
+      "/var/task/app/pages", // Vercel standard path
+      "/var/task/.output/app/pages", // Vercel with Nitro
+      "/app/pages", // Root-relative path
+    ];
 
-    // Verify that this is indeed our framework root by checking for app/pages
-    if (existsSync(join(potentialRoot, "app", "pages"))) {
-      return potentialRoot;
-    }
-
-    // Try to use package.json as a fallback
-    const require = createRequire(import.meta.url);
-    try {
-      // First try to resolve package.json in the parent directory
-      const pkgPath = require.resolve("../package.json");
-      const root = dirname(pkgPath);
-
-      // Verify this path has app/pages
-      if (existsSync(join(root, "app", "pages"))) {
-        return root;
+    for (const path of potentialPaths) {
+      if (existsSync(path)) {
+        return path;
       }
-    } catch (e) {
-      // If that fails, try using cwd
-      console.warn("Could not find framework package.json, trying CWD");
     }
 
-    // Final fallback - use current working directory
-    const cwd = process.cwd();
-    if (existsSync(join(cwd, "app", "pages"))) {
-      return cwd;
-    }
-
-    console.warn("Could not reliably detect project root, using best guess");
-    return potentialRoot;
+    return null; // Couldn't find pages directory
   } catch (error) {
-    console.error("Error detecting project root:", error);
-    return process.cwd();
+    console.error("Error detecting pages directory:", error);
+    return null;
   }
 }
 
-// Get paths with proper project root detection
-const PROJECT_ROOT = getProjectRoot();
-const PAGES_DIR = resolve(PROJECT_ROOT, "app/pages");
+// Detect the pages directory
+const pagesDir = getPagesDir();
+if (!pagesDir) {
+  console.warn(
+    "Could not find pages directory, routing may not work correctly"
+  );
+}
 
-console.log(`Project root detected: ${PROJECT_ROOT}`);
-console.log(`Pages directory: ${PAGES_DIR}`);
+// The router options with detected pages dir
+const routerOptions = {
+  dir: pagesDir || "./app/pages", // Use found dir or default
+  extensions: ["tsx", "jsx", "js", "ts"],
+  ignore: ["**/_*.*"], // Ignore files/folders starting with underscore
+};
+
+console.log(`Pages directory: ${pagesDir || "Using default ./app/pages"}`);
+
+// Define interface for route objects
+interface Route {
+  path: string;
+  $page?: {
+    src: string;
+    pick: string[];
+  };
+  [key: string]: unknown;
+}
+
+/**
+ * Stone Throw implementation of Vinxi's file system router
+ * Takes advantage of Vinxi's built-in routing capabilities
+ */
+class StoneRouter extends BaseFileSystemRouter {
+  private routeCache = new Map<string, PageComponent>();
+  options: typeof routerOptions;
+
+  constructor(
+    options: typeof routerOptions,
+    router: RouterObject,
+    app: AppObject
+  ) {
+    super(options, router, app);
+    this.options = options;
+  }
+
+  /**
+   * Convert file path to route path
+   * Example: /app/pages/about/Page.tsx -> /about
+   */
+  toPath(filePath: string): string {
+    // Remove file extension and Page suffix
+    let path = filePath.replace(/\.(tsx|jsx|js|ts)$/, "");
+
+    // Extract the part after the pages directory
+    const pagesPath = this.options.dir;
+    if (path.startsWith(pagesPath)) {
+      path = path.substring(pagesPath.length);
+    }
+
+    // Special case for root Page
+    if (path.endsWith("/Page") || path.endsWith("\\Page")) {
+      path = path.slice(0, -5); // Remove "/Page"
+      return path === "" ? "/" : path;
+    }
+
+    return "/";
+  }
+
+  /**
+   * Convert file path to route configuration
+   */
+  toRoute(filePath: string): Route {
+    return {
+      path: this.toPath(filePath),
+      $page: {
+        src: filePath,
+        pick: ["default"],
+      },
+    };
+  }
+
+  /**
+   * Load a component for a route path
+   */
+  async loadComponent(urlPath: string): Promise<PageComponent | null> {
+    try {
+      // Use cache if available
+      if (this.routeCache.has(urlPath)) {
+        return this.routeCache.get(urlPath);
+      }
+
+      // Get the routes from Vinxi's router
+      const routes: Route[] = await this.getRoutes();
+
+      // Find matching route
+      const route = routes.find((r) => r.path === urlPath);
+      if (!route) {
+        console.warn(`No route found for path: ${urlPath}`);
+        return null;
+      }
+
+      // Get the page module information
+      const pageInfo = route.$page;
+      if (!pageInfo) {
+        console.warn(`Route has no $page property: ${urlPath}`);
+        return null;
+      }
+
+      // Load the component using relative path
+      let relativePath: string;
+      if (pageInfo.src.startsWith("/")) {
+        // Convert absolute path to relative path for importing
+        const pathAfterPages = pageInfo.src.substring(this.options.dir.length);
+        relativePath = `../app/pages${pathAfterPages}`;
+      } else {
+        relativePath = pageInfo.src;
+      }
+
+      console.log(
+        `Loading page for path: ${urlPath}, using import: ${relativePath}`
+      );
+
+      // Import the component
+      const module = await import(/* @vite-ignore */ relativePath);
+      const component = module[pageInfo.pick[0]];
+
+      // Cache the result
+      this.routeCache.set(urlPath, component);
+
+      return component;
+    } catch (error) {
+      console.error(`Error loading component for path ${urlPath}:`, error);
+      return null;
+    }
+  }
+}
+
+// Create empty router and app objects for BaseFileSystemRouter
+const emptyRouter: RouterObject = {};
+const emptyApp: AppObject = {};
+
+// Create router instance
+const router = new StoneRouter(routerOptions, emptyRouter, emptyApp);
 
 /**
  * Loads a page component based on the URL path.
@@ -66,48 +187,8 @@ console.log(`Pages directory: ${PAGES_DIR}`);
  * - "/" -> "/app/pages/Page.tsx"
  * - "/about" -> "/app/pages/about/Page.tsx"
  * - "/blog/post" -> "/app/pages/blog/post/Page.tsx"
- * TODO: Add support for dynamic segments
  */
-export async function loadPageComponent(event: H3Event) {
-  const path = event.path;
-
-  // Default to root Page for root path
-  if (path === "/" || path === "") {
-    // For root path we can use a simple relative import
-    return import("../app/pages/Page").then((module) => module.default);
-  }
-
-  // Split the path into segments
-  const segments = path.split("/").filter(Boolean);
-
-  // Construct the directory path from segments
-  const dirPath = join(PAGES_DIR, ...segments);
-
-  // Path to the Page.tsx file within that directory
-  const pagePath = join(dirPath, "Page.tsx");
-
-  // Check if the file exists
-  if (!existsSync(pagePath)) {
-    console.warn(`Page not found for path: ${path} (looking for ${pagePath})`);
-    return null;
-  }
-
-  try {
-    // Import using a predictable relative path pattern
-    // This works better with bundlers than dynamic resolved paths
-    const importPath = `../app/pages/${segments.join("/")}/Page`;
-    console.log(
-      `Loading page for path: ${path}, using import path: ${importPath}`
-    );
-
-    // Add vite-ignore to suppress the dynamic import warning
-    const module = await import(/* @vite-ignore */ importPath);
-    return module.default;
-  } catch (error) {
-    console.error(`Error loading page component for path ${path}:`, error);
-    console.error(
-      `Failed import path: ../app/pages/${segments.join("/")}/Page`
-    );
-    return null;
-  }
+export async function loadPageComponent(event: PageEvent) {
+  const path = event.path || "/";
+  return router.loadComponent(path);
 }
