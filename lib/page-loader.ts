@@ -5,140 +5,41 @@ import type { H3Event } from "h3";
 import { BaseFileSystemRouter } from "vinxi/fs-router";
 import type { PageComponent, PageEvent } from "./types";
 import { pageLoaderLogger as logger } from "./logging";
+import {
+  getPagesDir,
+  fileExists as fsFileExists,
+  getPossiblePaths as getRoutePaths,
+  findPageFiles,
+} from "./routing/file-system";
+import {
+  debugVercelPaths,
+  findPageFilesRecursive,
+} from "./routing/debug-paths";
 
 // Define types for Vinxi router and app objects
 type RouterObject = Record<string, unknown>;
 type AppObject = Record<string, unknown>;
 
-/**
- * Find the pages directory based on the environment
- * This is crucial for both local development and Vercel deployment
- */
-function getPagesDir(): string | null {
-  try {
-    // Get current file location
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(__filename);
+// Run debug paths on Vercel to help diagnose deployment issues
+if (process.env.VERCEL === "1") {
+  logger.info("🔍 Running Vercel path diagnostics");
+  debugVercelPaths();
 
-    logger.info("Current __dirname:", __dirname);
-    logger.info("Current cwd:", process.cwd());
-    logger.info("NODE_ENV:", process.env.NODE_ENV);
-    logger.info("VERCEL:", process.env.VERCEL);
-
-    // First check if we're running on Vercel
-    // Vercel Functions have a specific file structure
-    if (process.env.VERCEL) {
-      // On Vercel, the app is deployed to one of these locations
-      const vercelPaths = [
-        "/var/task/app/pages",
-        "/var/task/.output/server/app/pages",
-        "/.output/server/app/pages",
-        resolve(process.cwd(), "app", "pages"),
-        resolve(process.cwd(), ".output", "server", "app", "pages"),
-      ];
-
-      logger.info("Checking Vercel paths:", vercelPaths);
-
-      for (const path of vercelPaths) {
-        if (existsSync(path)) {
-          // Check if the path actually contains Page.tsx files
-          try {
-            // Look for at least one Page.tsx in the directory or subdirectories
-            const hasPageFiles = findPageFiles(path);
-            if (hasPageFiles.length > 0) {
-              logger.success(
-                "Found Vercel pages directory with Page.tsx files at:",
-                path
-              );
-              logger.debug("Found Page files:", hasPageFiles);
-              return path;
-            }
-
-            logger.warn(
-              "Directory exists but contains no Page.tsx files:",
-              path
-            );
-          } catch (err) {
-            logger.error("Error checking for Page.tsx files:", err);
-          }
-
-          // Even if no Page.tsx files found, still use the directory if it exists
-          logger.success("Found Vercel pages directory at:", path);
-          return path;
-        }
+  // Try to find page files in known locations
+  const taskDir = "/var/task";
+  if (existsSync(taskDir)) {
+    const pageFiles = findPageFilesRecursive(taskDir);
+    if (pageFiles.length > 0) {
+      logger.success(
+        `✅ Found ${pageFiles.length} Page files in Vercel deployment:`
+      );
+      for (const path of pageFiles) {
+        logger.info(`- ${path}`);
       }
-
-      // Last resort: try to list directories to debug
-      try {
-        const rootDirs = readdirSync("/var/task");
-        logger.debug("Contents of /var/task:", rootDirs);
-
-        if (existsSync("/var/task/.output")) {
-          const outputDirs = readdirSync("/var/task/.output");
-          logger.debug("Contents of /var/task/.output:", outputDirs);
-
-          if (existsSync("/var/task/.output/server")) {
-            const serverDirs = readdirSync("/var/task/.output/server");
-            logger.debug("Contents of /var/task/.output/server:", serverDirs);
-          }
-        }
-      } catch (err) {
-        logger.error("Error listing directories:", err);
-      }
+    } else {
+      logger.warn("❌ No Page files found in Vercel deployment");
     }
-
-    // Try various potential locations for local development
-    const localPaths = [
-      resolve(__dirname, "..", "app", "pages"), // ../app/pages from lib
-      resolve(process.cwd(), "app", "pages"), // CWD/app/pages
-    ];
-
-    logger.info("Checking local paths:", localPaths);
-    for (const path of localPaths) {
-      if (existsSync(path)) {
-        logger.success("Found local pages directory at:", path);
-        return path;
-      }
-    }
-
-    logger.warn("Could not find pages directory, using default path");
-    return resolve(process.cwd(), "app", "pages");
-  } catch (error) {
-    logger.error("Error detecting pages directory:", error);
-    return null;
   }
-}
-
-/**
- * Recursively find all Page.tsx files in a directory
- */
-function findPageFiles(dir: string, files: string[] = []): string[] {
-  if (!existsSync(dir)) {
-    return files;
-  }
-
-  try {
-    const dirContents = readdirSync(dir, { withFileTypes: true });
-
-    for (const item of dirContents) {
-      const fullPath = resolve(dir, item.name);
-
-      if (item.isDirectory()) {
-        findPageFiles(fullPath, files);
-      } else if (
-        item.name === "Page.tsx" ||
-        item.name === "Page.jsx" ||
-        item.name === "Page.js" ||
-        item.name === "Page.ts"
-      ) {
-        files.push(fullPath);
-      }
-    }
-  } catch (err) {
-    logger.warn(`Error reading directory ${dir}:`, err);
-  }
-
-  return files;
 }
 
 // Detect the pages directory
@@ -248,62 +149,32 @@ class StoneRouter extends BaseFileSystemRouter {
 
       // Check file existence before even trying to load routes
       const possiblePaths = this.getPossiblePaths(urlPath);
+
       logger.debug("Checking possible file paths for:", urlPath);
-
-      // First check: Do any of the possible files actually exist?
-      let anyFileExists = false;
       for (const path of possiblePaths) {
-        const exists = this.fileExists(path);
-        logger.debug(`  - ${path}: ${exists ? "EXISTS" : "NOT FOUND"}`);
-        if (exists) {
-          anyFileExists = true;
-        }
+        logger.debug(
+          `  - ${path}: ${this.fileExists(path) ? "FOUND" : "NOT FOUND"}`
+        );
       }
 
-      // If no files exist for this route at all, return null immediately
-      if (!anyFileExists) {
-        logger.warn(`No Page files exist for route: ${urlPath}`);
+      // Normalize the current path to match our routing convention
+      // Different environments may use different path formats
+      const normalizedPath = urlPath === "/" ? "/" : urlPath.replace(/\/$/, "");
+
+      // Find a component path
+      const componentPath = this.findComponentPath(normalizedPath);
+      if (!componentPath) {
+        logger.warn("No component path found for:", normalizedPath);
         return null;
       }
 
-      // Get the routes from Vinxi's router
-      logger.debug("Getting routes from Vinxi router");
-      const routes: Route[] = await this.getRoutes();
+      logger.info("Found component path:", componentPath);
 
-      // Debug routes for better visibility
-      logger.debug("Available routes:", routes.map((r) => r.path).join(", "));
-      logger.debug("All routes with details:", routes);
-
-      // Find matching route
-      const route = routes.find((r) => r.path === urlPath);
-      if (!route) {
-        logger.warn("No route found for path:", urlPath);
-
-        // Check which routes are close to the requested path
-        const closeRoutes = routes
-          .filter((r) => r.path.includes(urlPath) || urlPath.includes(r.path))
-          .map((r) => r.path);
-
-        if (closeRoutes.length > 0) {
-          logger.info("Similar routes that might match:", closeRoutes);
-        }
-
-        return null;
-      }
-
-      // Get the page module information
-      const pageInfo = route.$page;
-      if (!pageInfo) {
-        logger.warn("Route has no $page property:", urlPath);
-        return null;
-      }
-
-      const componentPath = pageInfo.src;
-      logger.info("Loading component from:", componentPath);
-
-      // Check if the file actually exists
+      // Check if the file exists
       const fileExists = this.fileExists(componentPath);
-      logger.debug(`Component file ${componentPath} exists: ${fileExists}`);
+      logger.info(
+        `Component file exists at path: ${componentPath} - ${fileExists}`
+      );
 
       if (!fileExists) {
         logger.warn(`Component file does not exist at path: ${componentPath}`);
@@ -339,55 +210,26 @@ class StoneRouter extends BaseFileSystemRouter {
         return null;
       }
 
-      // Import the component
       try {
-        logger.debug("Importing from:", componentPath);
-        const module = await import(/* @vite-ignore */ componentPath);
-        logger.debug("Module keys:", Object.keys(module).join(", "));
+        logger.debug("Importing component from path:", componentPath);
+        const comp = await import(/* @vite-ignore */ componentPath);
+        logger.debug("Import result:", comp);
 
-        const component = module[pageInfo.pick[0]];
-
-        if (!component) {
-          logger.error(
-            "Component not found in module for path:",
-            urlPath,
-            "Module content:",
-            module
+        if (comp.default) {
+          logger.success("Successfully loaded component for:", urlPath);
+          this.routeCache.set(urlPath, comp.default);
+          return comp.default;
+          // biome-ignore lint/style/noUselessElse: this is more readable
+        } else
+          logger.warn(
+            "Component does not have a default export:",
+            componentPath
           );
-          return null;
-        }
-
-        // Cache the result
-        this.routeCache.set(urlPath, component);
-        logger.success("Successfully loaded component for path:", urlPath);
-        return component;
-      } catch (importError) {
-        logger.error("Error importing component:", importError);
-
-        // Try alternative import strategies if the standard one fails
-        for (const alternativePath of possiblePaths) {
-          if (alternativePath !== componentPath) {
-            try {
-              logger.debug("Trying alternative import from:", alternativePath);
-              const altModule = await import(
-                /* @vite-ignore */ alternativePath
-              );
-              if (altModule.default) {
-                logger.success(
-                  "Found component via alternative path:",
-                  alternativePath
-                );
-                this.routeCache.set(urlPath, altModule.default);
-                return altModule.default;
-              }
-            } catch (e) {
-              // Ignore errors for alternative paths
-            }
-          }
-        }
-
-        return null;
+      } catch (error) {
+        logger.error("Error importing component:", error);
       }
+
+      return null;
     } catch (error) {
       logger.error("Error loading component for path:", urlPath, error);
       return null;
@@ -395,12 +237,12 @@ class StoneRouter extends BaseFileSystemRouter {
   }
 
   /**
-   * Check if a file actually exists at the given path
-   * This helps diagnose file path resolution issues in production
+   * Check if a file exists
+   * Safely handles errors
    */
   fileExists(componentPath: string): boolean {
     try {
-      return existsSync(componentPath);
+      return fsFileExists(componentPath);
     } catch (error) {
       logger.error("Error checking file existence:", error);
       return false;
@@ -408,64 +250,49 @@ class StoneRouter extends BaseFileSystemRouter {
   }
 
   /**
-   * Get all possible file paths for a route
-   * This helps diagnose file path resolution issues in production
+   * Get all possible paths for a route
    */
   getPossiblePaths(urlPath: string): string[] {
-    const paths = [];
-    const pagesDir = this.options.dir;
+    const extensions = this.options.extensions;
+    return getRoutePaths(urlPath, this.options.dir, extensions);
+  }
 
-    // Basic path with Page.tsx
-    const basicPath =
-      urlPath === "/"
-        ? `${pagesDir}/Page.tsx`
-        : `${pagesDir}${urlPath}/Page.tsx`;
-    paths.push(basicPath);
+  /**
+   * Find the path to a component from a URL path
+   */
+  findComponentPath(urlPath: string): string | null {
+    // Get all possible paths for this route
+    const possiblePaths = this.getPossiblePaths(urlPath);
 
-    // Alternate file extensions
-    for (const ext of this.options.extensions) {
-      if (ext !== "tsx") {
-        // Already added above
-        const extPath =
-          urlPath === "/"
-            ? `${pagesDir}/Page.${ext}`
-            : `${pagesDir}${urlPath}/Page.${ext}`;
-        paths.push(extPath);
+    // Try each path in order
+    for (const path of possiblePaths) {
+      if (this.fileExists(path)) {
+        return path;
       }
     }
 
-    // Try directly as file (no /Page suffix)
-    for (const ext of this.options.extensions) {
-      const directPath =
-        urlPath === "/"
-          ? `${pagesDir}/index.${ext}`
-          : `${pagesDir}${urlPath}.${ext}`;
-      paths.push(directPath);
-    }
-
-    return paths;
+    return null;
   }
 }
 
-// Create empty router and app objects for BaseFileSystemRouter
-const emptyRouter: RouterObject = {};
-const emptyApp: AppObject = {};
-
-// Create router instance
-const router = new StoneRouter(routerOptions, emptyRouter, emptyApp);
+/**
+ * Router singleton instance
+ */
+const router = new StoneRouter(routerOptions, {}, {});
 
 /**
- * Loads a page component based on the URL path.
- *
- * Examples:
- * - "/" -> "/app/pages/Page.tsx"
- * - "/about" -> "/app/pages/about/Page.tsx"
- * - "/blog/post" -> "/app/pages/blog/post/Page.tsx"
+ * Load a page component for a route path
+ * This is the main public API for the page loader
  */
 export async function loadPageComponent(
   event: H3Event
 ): Promise<PageComponent | null> {
-  const path = event.path || "/";
-  logger.info("loadPageComponent called for path:", path);
-  return router.loadComponent(path);
+  try {
+    logger.info("loadPageComponent called for path:", event.path);
+    const component = await router.loadComponent(event.path);
+    return component;
+  } catch (error) {
+    logger.error("Error loading page component:", error);
+    return null;
+  }
 }

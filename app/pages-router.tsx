@@ -1,127 +1,74 @@
 import { eventHandler } from "vinxi/http";
-import { getManifest } from "vinxi/manifest";
-import { loadPageComponent } from "../lib/page-loader";
-import Stone from "../lib/Stone";
-import h from "../lib/JSX";
-import NotFoundPage from "./pages/404";
+import routes from "vinxi/routes";
 import type { PageEvent } from "../lib/types";
 import { routerLogger as logger } from "../lib/logging";
+import NotFoundPage from "./pages/404";
+import * as renderer from "../lib/page-renderer";
+
+// Define a type for the route structure based on Vinxi's routes
+interface RouteModule {
+  path: string;
+  $page?: {
+    import: () => Promise<{ default: (event: PageEvent) => string }>;
+  };
+}
 
 export default eventHandler({
   handler: async (event: PageEvent) => {
-    logger.info("Handling request for path:", event.path);
-    logger.debug("Request headers:", event.node.req.headers);
-    logger.debug("NODE_ENV:", process.env.NODE_ENV);
-    logger.debug("VERCEL:", process.env.VERCEL);
-
     try {
-      // Check for invalid paths immediately to prevent waste of resources
-      const validPathPattern = /^\/([a-zA-Z0-9_-]+\/?)*$/;
-      if (event.path !== "/" && !validPathPattern.test(event.path)) {
-        logger.warn("Invalid path format:", event.path);
-        return NotFoundPage(event);
+      logger.info("Handling request for path:", event.path);
+
+      // Find matching route
+      const matchedRoute = routes.find((r) => r.path === event.path) as
+        | RouteModule
+        | undefined;
+
+      if (!matchedRoute) {
+        logger.warn("No matching route found for path:", event.path);
+        return await renderer.renderErrorWithComponent(event, NotFoundPage);
       }
-
-      logger.info("Getting client manifest");
-      const clientManifest = getManifest("client");
-
-      if (!clientManifest) {
-        logger.warn("Client manifest not found");
-        return NotFoundPage(event);
-      }
-
-      logger.debug("Client manifest found:", clientManifest);
-
-      if (
-        !clientManifest.inputs ||
-        !clientManifest.handler ||
-        !clientManifest.inputs[clientManifest.handler]
-      ) {
-        logger.warn("Client manifest missing inputs or handler");
-        return NotFoundPage(event);
-      }
-
-      const clientAssets = await clientManifest.inputs[
-        clientManifest.handler
-      ].assets();
-      const clientEntry =
-        clientManifest.inputs[clientManifest.handler].output.path;
-
-      logger.debug("Client assets count:", clientAssets.length);
-      logger.debug("Client entry:", clientEntry);
-
-      logger.info("Loading page component for path:", event.path);
-      // Load the correct page component based on the path
-      const PageComponent = await loadPageComponent(event);
-
-      // Return 404 if page not found
-      if (!PageComponent) {
-        logger.warn(
-          "No page component found for path:",
-          event.path,
-          "returning 404"
-        );
-
-        return NotFoundPage(event);
-      }
-
-      logger.info("Rendering page component for path:", event.path);
-      // Render the page with the appropriate layout
 
       try {
-        const pageOutput = (
-          <html lang="en">
-            <head>
-              <title>Stone Throw</title>
-              <meta
-                name="description"
-                content="A simple framework for building web components with
-                server-side rendering"
-              />
-              <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-              />
+        // Get component import function
+        const componentImport = matchedRoute.$page?.import;
 
-              {/* Include all client assets (CSS, preloads, etc.) */}
-              {clientAssets.map((asset) => {
-                // bang the style directly into the head
-                if (asset.tag === "style") {
-                  return <style>{asset.children}</style>;
-                }
+        if (!componentImport) {
+          logger.warn("Route has no import function:", event.path);
+          return await renderer.renderErrorWithComponent(event, NotFoundPage);
+        }
 
-                if (asset.tag === "link" && asset.attrs?.href) {
-                  return <link key={asset.attrs.href} {...asset.attrs} />;
-                }
-                return null;
-              })}
+        // Import the component
+        const pageModule = await componentImport();
+        const PageComponent = pageModule.default;
 
-              <script type="module" src={clientEntry} defer />
-            </head>
-            {/* Render the page component */}
-            {PageComponent(event)}
-            {/* Hand the serverside registry keys over to the client */}
-            <script type="module">
-              {`
-                  window.FRAMEWORK = {
-                    componentsToRegister: ${JSON.stringify(
-                      Stone.getComponentsToRegister()
-                    )}
-                  };
-                `}
-            </script>
-          </html>
+        if (!PageComponent) {
+          logger.error(
+            `Component default export not found for path: ${event.path}`
+          );
+          return await renderer.renderErrorWithComponent(event, NotFoundPage);
+        }
+
+        // Render the page with the component, client assets, and registry
+        return await renderer.renderPage(PageComponent, event);
+      } catch (error) {
+        logger.error("Error loading or rendering page component:", error);
+        event.node.res.statusCode = 500;
+        return renderer.renderErrorPage(
+          `Error rendering page: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+          500
         );
-
-        logger.success("Successfully rendered page");
-        return pageOutput;
-      } catch (renderError) {
-        logger.error("Error rendering page:", renderError);
-        return NotFoundPage(event);
       }
     } catch (error) {
       logger.error("Fatal error in router:", error);
-      return NotFoundPage(event);
+      event.node.res.statusCode = 500;
+      return renderer.renderErrorPage(
+        `Server error: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
+        500
+      );
     }
   },
 });

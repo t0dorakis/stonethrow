@@ -4,6 +4,7 @@ import type { H3Event, EventHandlerRequest } from "h3";
 export type PageEvent = H3Event<EventHandlerRequest>;
 export type PageComponent = (event: PageEvent) => string;
 
+export type SignalType<T> = ReturnType<typeof signal<T>>;
 export interface ComponentWithInternalProps {
   (props?: Props, children?: unknown): string;
   module: () => void;
