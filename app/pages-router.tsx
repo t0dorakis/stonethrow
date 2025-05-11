@@ -4,64 +4,75 @@ import { loadPageComponent } from "../lib/page-loader";
 import Stone from "../lib/Stone";
 import h from "../lib/JSX";
 import NotFoundPage from "./pages/404";
+import type { PageEvent } from "../lib/types";
 
 export default eventHandler({
-	handler: async (event) => {
-		const clientManifest = getManifest("client");
-		const clientAssets =
-			await clientManifest.inputs[clientManifest.handler].assets();
-		const clientEntry =
-			clientManifest.inputs[clientManifest.handler].output.path;
+  handler: async (event: PageEvent) => {
+    console.log(`Handling request for path: ${event.path}`);
 
-		// Load the correct page component based on the path
-		const PageComponent = await loadPageComponent(event);
+    const clientManifest = getManifest("client");
+    const clientAssets = await clientManifest.inputs[
+      clientManifest.handler
+    ].assets();
+    const clientEntry =
+      clientManifest.inputs[clientManifest.handler].output.path;
 
-		// Return 404 if page not found
-		if (!PageComponent) {
-			return NotFoundPage(event);
-		}
+    console.log(`Loading page component for path: ${event.path}`);
+    // Load the correct page component based on the path
+    const PageComponent = await loadPageComponent(event);
 
-		return (
-			<html lang="en">
-				<head>
-					<title>Stone Throw</title>
-					<meta
-						name="description"
-						content="A simple framework for building web components with
+    // Return 404 if page not found
+    if (!PageComponent) {
+      console.warn(
+        `No page component found for path: ${event.path}, returning 404`
+      );
+      return NotFoundPage(event);
+    }
+
+    console.log(`Rendering page component for path: ${event.path}`);
+    // Render the page with the appropriate layout
+    return (
+      <html lang="en">
+        <head>
+          <title>Stone Throw</title>
+          <meta
+            name="description"
+            content="A simple framework for building web components with
             server-side rendering"
-					/>
-					<meta
-						name="viewport"
-						content="width=device-width, initial-scale=1.0"
-					/>
+          />
+          <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+          />
 
-					{/* Include all client assets (CSS, preloads, etc.) */}
-					{clientAssets.map((asset) => {
-						// bang the style directly into the head
-						if (asset.tag === "style") {
-							return <style>{asset.children}</style>;
-						}
+          {/* Include all client assets (CSS, preloads, etc.) */}
+          {clientAssets.map((asset) => {
+            // bang the style directly into the head
+            if (asset.tag === "style") {
+              return <style>{asset.children}</style>;
+            }
 
-						if (asset.tag === "link" && asset.attrs?.href) {
-							return <link key={asset.attrs.href} {...asset.attrs} />;
-						}
-						return null;
-					})}
+            if (asset.tag === "link" && asset.attrs?.href) {
+              return <link key={asset.attrs.href} {...asset.attrs} />;
+            }
+            return null;
+          })}
 
-					<script type="module" src={clientEntry} defer />
-				</head>
-				{PageComponent(event)}
-				{/* Hand the serverside registry keys over to the client */}
-				<script type="module">
-					{`
+          <script type="module" src={clientEntry} defer />
+        </head>
+        {/* Render the page component */}
+        {PageComponent(event)}
+        {/* Hand the serverside registry keys over to the client */}
+        <script type="module">
+          {`
               window.FRAMEWORK = {
                 componentsToRegister: ${JSON.stringify(
-									Stone.getComponentsToRegister(),
-								)}
+                  Stone.getComponentsToRegister()
+                )}
               };
             `}
-				</script>
-			</html>
-		);
-	},
+        </script>
+      </html>
+    );
+  },
 });
