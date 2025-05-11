@@ -1,10 +1,10 @@
 {
-	"$schema": "https://openapi.vercel.sh/vercel.json",
-	"buildCommand": "npm run build",
-	"devCommand": "npm run dev",
-	"framework": null,
-	"installCommand": "npm install",
-	"rewrites": [
-		{ "source": "/(.*)", "destination": "/.output/server/index.mjs" }
-	]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "framework": null,
+  "installCommand": "npm install",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/.output/server/index.mjs" }
+  ]
 }
