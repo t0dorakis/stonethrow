@@ -2,8 +2,8 @@ import { eventHandler } from "vinxi/http";
 import routes from "vinxi/routes";
 import type { PageEvent } from "../lib/types";
 import { routerLogger as logger } from "../lib/logging";
-import NotFoundPage from "./pages/404";
-import * as renderer from "../lib/page-renderer";
+import { renderPage } from "../lib/page-renderer";
+import { handleError } from "../lib/error-handler";
 
 // Define a type for the route structure based on Vinxi's routes
 interface RouteModule {
@@ -23,52 +23,27 @@ export default eventHandler({
         | RouteModule
         | undefined;
 
-      if (!matchedRoute) {
-        logger.warn("No matching route found for path:", event.path);
-        return await renderer.renderErrorWithComponent(event, NotFoundPage);
+      // Handle missing routes with 404
+      if (!matchedRoute || !matchedRoute.$page?.import) {
+        logger.warn(`No valid route found for path: ${event.path}`);
+        return handleError(event, 404);
       }
 
-      try {
-        // Get component import function
-        const componentImport = matchedRoute.$page?.import;
+      // Import and render the page component
+      const pageModule = await matchedRoute.$page.import();
 
-        if (!componentImport) {
-          logger.warn("Route has no import function:", event.path);
-          return await renderer.renderErrorWithComponent(event, NotFoundPage);
-        }
-
-        // Import the component
-        const pageModule = await componentImport();
-        const PageComponent = pageModule.default;
-
-        if (!PageComponent) {
-          logger.error(
-            `Component default export not found for path: ${event.path}`
-          );
-          return await renderer.renderErrorWithComponent(event, NotFoundPage);
-        }
-
-        // Render the page with the component, client assets, and registry
-        return await renderer.renderPage(PageComponent, event);
-      } catch (error) {
-        logger.error("Error loading or rendering page component:", error);
-        event.node.res.statusCode = 500;
-        return renderer.renderErrorPage(
-          `Error rendering page: ${
-            error instanceof Error ? error.message : String(error)
-          }`,
-          500
+      if (!pageModule.default) {
+        logger.error(
+          `Component default export not found for path: ${event.path}`
         );
+        return handleError(event, 404);
       }
+
+      // Render the page
+      return await renderPage(pageModule.default, event);
     } catch (error) {
-      logger.error("Fatal error in router:", error);
-      event.node.res.statusCode = 500;
-      return renderer.renderErrorPage(
-        `Server error: ${
-          error instanceof Error ? error.message : String(error)
-        }`,
-        500
-      );
+      logger.error("Fatal router error:", error);
+      return handleError(event, 500, error);
     }
   },
 });

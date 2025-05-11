@@ -33,7 +33,7 @@ export async function loadClientAssets() {
     const clientAssets = await clientManifest.inputs[
       clientManifest.handler
     ].assets();
-    logger.info("Client assets loaded:", clientAssets.length);
+    logger.verbose("Client assets loaded:", clientAssets.length);
 
     return { clientAssets, clientEntry };
   } catch (error) {
