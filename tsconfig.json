@@ -1,6 +1,12 @@
 {
-  "compilerOptions": {
-    "jsx": "react",
-    "jsxFactory": "h"
-  }
+	"compilerOptions": {
+		"jsx": "react",
+		"jsxFactory": "h",
+		"target": "ES2020",
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true
+	}
 }

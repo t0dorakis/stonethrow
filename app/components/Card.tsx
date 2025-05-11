@@ -8,16 +8,14 @@ const Card = create({
   render: (state, props, children) => {
     const title = (props?.title as string) || "Card";
 
-    return `
-      <div class="card">
-        <div class="card-header">
-          <h3>${title}</h3>
+    return (
+      <div className="card">
+        <div className="card-header">
+          <h3>{title}</h3>
         </div>
-        <div class="card-body">
-          ${children || ""}
-        </div>
+        <div className="card-body">{children || ""}</div>
       </div>
-    `;
+    );
   },
 });
 

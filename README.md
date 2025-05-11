@@ -225,9 +225,84 @@ When troubleshooting Vinxi applications:
 
 Special thanks to [Robin Löffel](https://github.com/robinloeffel) for the [sgnls](https://github.com/robinloeffel/sgnls) library that powers our reactive state management.
 
-# Stone Framework
+# Stone Throw Framework
 
-A lightweight progressive-enhancement framework for building server-first web applications with client-side interactivity.
+A lightweight web component framework focused on server-side rendering and progressive enhancement.
+
+## Key Features
+
+- Server-side rendered custom elements
+- Progressive enhancement as a core principle
+- Lightweight client-side hydration
+- File-based routing
+
+## File-Based Routing
+
+Stone Throw includes a folder-based routing system powered by Vinxi:
+
+### How It Works
+
+Pages are automatically mapped from URL paths to folder structures:
+
+- `/` → `app/pages/Page.tsx`
+- `/about` → `app/pages/about/Page.tsx`  
+- `/blog/post` → `app/pages/blog/post/Page.tsx`
+
+Each route corresponds to a `Page.tsx` file within a directory matching the URL path.
+
+### Creating Pages
+
+1. Create a folder structure in `app/pages` that matches your URL path
+2. Add a `Page.tsx` file inside each folder
+3. For nested routes, create nested directories
+
+Example page component:
+
+```tsx
+import h from "../../../lib/JSX";
+import Card from "../../components/Card";
+
+const Page = () => {
+  return (
+    <body>
+      <div class="container">
+        <h1>About Stone Throw</h1>
+        <div class="section">
+          <p>This is an about page.</p>
+        </div>
+      </div>
+    </body>
+  );
+};
+
+export default Page;
+```
+
+### Nested Routes
+
+For nested routes like `/blog/post`:
+
+1. Create the directory structure: `app/pages/blog/post/`
+2. Add a `Page.tsx` file inside that directory
+
+This approach makes the routing structure intuitive and visually match the URL paths.
+
+## Running the Framework
+
+```bash
+# Development mode
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm run start
+```
+
+## Philosophy
+
+Stone Throw shares philosophical alignment with the Enhance framework in its focus on SSR-rendered custom elements without client-side hydration, but embraces more of the React ecosystem and modern tooling like Vinxi and Tailwind.
 
 ## Core Concepts
 

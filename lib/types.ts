@@ -1,12 +1,7 @@
 import type signal from "./sgnls";
+import type { H3Event } from "h3";
 
-export type SignalType<T> = {
-  get: () => T;
-  set: (newValue: T) => void;
-  update: (updater: (oldValue: T) => T) => void;
-  effect: (effectToAdd: (value: T) => void) => void;
-  stop: () => void;
-};
+export type PageEvent = H3Event;
 
 export interface ComponentWithInternalProps {
   (props?: Props, children?: unknown): string;

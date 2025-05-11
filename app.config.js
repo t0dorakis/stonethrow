@@ -31,10 +31,10 @@ export default createApp({
       },
     },
     {
-      name: "ssr",
+      name: "pages",
       type: "http",
       target: "server",
-      handler: "./app/server.tsx",
+      handler: "./app/pages-router.tsx",
       plugins: () => [FrameWorkPlugin()],
     },
     // serverFunctions.router({
