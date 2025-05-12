@@ -1,13 +1,13 @@
 import type { PageEvent } from "../../lib/types";
-import h from "../../lib/JSX";
-
+import NavBar from "../components/NavBar";
 /**
  * Custom 404 page that can be freely customized
  * Will be rendered inside an HTML document with client assets and framework initialization
  */
 const NotFoundPage = (event: PageEvent) => {
-  return (
-    <body>
+  return /*html*/ `
+    <main>
+      ${NavBar()}
       <div class="error-container">
         <h1>404 - Page Not Found</h1>
         <p>
@@ -16,7 +16,7 @@ const NotFoundPage = (event: PageEvent) => {
         <a href="/">Return to Home</a>
       </div>
     </body>
-  );
+  `;
 };
 
 export default NotFoundPage;

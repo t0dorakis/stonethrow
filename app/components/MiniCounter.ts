@@ -1,5 +1,4 @@
 import { create } from "../../lib/Stone";
-import h from "../../lib/JSX";
 
 // Minimal counter component - name will be derived from variable name (MiniCounter -> mini-counter)
 const MiniCounter = create({
@@ -9,12 +8,12 @@ const MiniCounter = create({
   }),
 
   // Render function with instance state
-  render: (state) => (
-    <div className="mini-counter">
-      <span>{state.count.get()}</span>
-      <button type="button">+</button>
+  render: (state) => /*html*/ `
+    <div class="flex items-center gap-2">
+      <span class="text-lg font-bold text-stone-500">${state.count.get()}</span>
+      <button type="button" class="px-1 text-white bg-stone-500 rounded-md hover:bg-stone-600">+</button>
     </div>
-  ),
+  `,
 
   // Client initialization with instance state
   init: (el, state) => {

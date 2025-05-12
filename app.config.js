@@ -1,7 +1,7 @@
 import { createApp } from "vinxi";
 import { resolve } from "node:path";
-import FrameWorkPlugin from "./framework.plugin.ts";
 import { PagesRouter } from "./lib/fileBasedRouter.ts";
+import tailwindcss from "@tailwindcss/vite";
 
 const getPreset = () => {
   if (process.env.VERCEL === "1") {
@@ -27,7 +27,7 @@ export default createApp({
       handler: "./app/client.ts",
       base: "/_build",
       target: "browser",
-      plugins: () => [FrameWorkPlugin()],
+      plugins: () => [tailwindcss()],
       build: {
         target: "browser",
         outDir: "./.vinxi/build/client",
@@ -42,14 +42,14 @@ export default createApp({
       name: "pages",
       type: "http",
       target: "server",
-      handler: "./app/pages-router.tsx",
-      plugins: () => [FrameWorkPlugin()],
+      handler: "./app/pages-router.ts",
+      plugins: () => [tailwindcss()],
       // https://vinxi.vercel.app/guide/file-system-routing.html
       routes: (router, app) => {
         return new PagesRouter(
           {
             dir: resolve("./app/pages"),
-            extensions: ["tsx", "jsx", "js", "ts"],
+            extensions: ["js", "ts"],
             ignore: ["**/_*.*"],
           },
           router,

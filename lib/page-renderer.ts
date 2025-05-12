@@ -1,4 +1,3 @@
-import h from "./JSX";
 import Stone from "./Stone";
 import type { PageEvent } from "./types";
 import { loadClientAssets } from "./client-assets";
@@ -17,30 +16,38 @@ function renderHead(
   clientEntry: string,
   title = "Stone Throw"
 ) {
-  return (
+  const mappedAssets = clientAssets
+    .filter((asset) => asset.tag === "style" && asset.children)
+    .map(
+      (asset) => /*html*/ `
+      <style>
+        ${asset.children}
+      </style>
+    `
+    );
+
+  const mappedLinks = clientAssets
+    .filter((asset) => asset.tag === "link" && asset.attrs?.href)
+    .map(
+      (asset) => /*html*/ `
+      <link href="${asset.attrs.href}" ${
+        asset.attrs.rel ? `rel="${asset.attrs.rel}"` : ""
+      } ${asset.attrs.type ? `type="${asset.attrs.type}"` : ""} />
+    `
+    );
+
+  console.log(mappedLinks);
+
+  return /*html*/ `
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>{title}</title>
-
-      {/* Include all client assets (CSS, preloads, etc.) */}
-      {clientAssets.map((asset) => {
-        // Add styles directly into the head
-        if (asset.tag === "style") {
-          return <style>{asset.children}</style>;
-        }
-
-        // Add links (CSS, preloads, etc.)
-        if (asset.tag === "link" && asset.attrs?.href) {
-          return <link key={asset.attrs.href} {...asset.attrs} />;
-        }
-
-        return null;
-      })}
-
-      <script type="module" src={clientEntry} defer />
+      <title>${title}</title>
+      ${mappedAssets}
+      ${mappedLinks}
+      <script type="module" src=${clientEntry} defer ></script>
     </head>
-  );
+  `;
 }
 
 /**
@@ -48,17 +55,15 @@ function renderHead(
  * @returns Rendered script element
  */
 function renderFrameworkScript() {
-  return (
+  return /*html*/ `
     <script type="module">
-      {`
         window.FRAMEWORK = {
           componentsToRegister: ${JSON.stringify(
             Stone.getComponentsToRegister()
           )}
         };
-      `}
     </script>
-  );
+  `;
 }
 
 /**
@@ -76,15 +81,13 @@ export async function renderPage(
     const { clientAssets, clientEntry } = await loadClientAssets();
 
     // Render the page with client assets and registry
-    return (
+    return /*html*/ `
       <html lang="en">
-        {renderHead(clientAssets, clientEntry)}
-        {/* Render the page component */}
-        {PageComponent(event)}
-        {/* Hand the serverside registry keys over to the client */}
-        {renderFrameworkScript()}
+        ${renderHead(clientAssets, clientEntry)}
+        ${PageComponent(event)}
+        ${renderFrameworkScript()}
       </html>
-    );
+    `;
   } catch (error) {
     logger.error("Error in renderPage:", error);
     return fallbackErrorPage(error);
@@ -116,15 +119,13 @@ export async function renderErrorWithComponent(
         ? "Not Found - Stone Throw"
         : `Error ${statusCode} - Stone Throw`;
 
-    return (
+    return /*html*/ `
       <html lang="en">
-        {renderHead(clientAssets, clientEntry, title)}
-        {/* Use the error component directly */}
-        {ErrorComponent(event)}
-        {/* Include framework initialization for components to work */}
-        {renderFrameworkScript()}
+        ${renderHead(clientAssets, clientEntry, title)}
+        ${ErrorComponent(event)}
+        ${renderFrameworkScript()}
       </html>
-    );
+    `;
   } catch (error) {
     logger.error("Failed to render custom error page:", error);
     // Fall back to basic error page
@@ -136,12 +137,12 @@ export async function renderErrorWithComponent(
  * Render a simple fallback error page when custom error pages fail
  */
 export function fallbackErrorPage(error: unknown | Error) {
-  return (
+  return /*html*/ `
     <html lang="en">
       <body>
         <h1>Error</h1>
-        <pre>{JSON.stringify(error, null, 2)}</pre>
+        <pre>${JSON.stringify(error, null, 2)}</pre>
       </body>
     </html>
-  );
+  `;
 }
