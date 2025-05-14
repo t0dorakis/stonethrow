@@ -1,8 +1,7 @@
-import h from "../../../../lib/JSX";
 import Card from "../../../components/Card";
 
 const Page = () => {
-  return (
+  return /*html*/ `
     <body>
       <div class="container">
         <h1>Blog Post</h1>
@@ -44,7 +43,7 @@ const Page = () => {
         </div>
       </div>
     </body>
-  );
+  `;
 };
 
 export default Page;

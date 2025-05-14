@@ -1,12 +1,11 @@
 import type { PageEvent } from "../../lib/types";
-import h from "../../lib/JSX";
 
 /**
  * Custom 500 server error page
  * Will be rendered inside an HTML document with client assets and framework initialization
  */
 const ServerErrorPage = (event: PageEvent) => {
-  return (
+  return /*html*/ `
     <body>
       <div class="error-container">
         <h1>Server Error</h1>
@@ -17,7 +16,7 @@ const ServerErrorPage = (event: PageEvent) => {
         </div>
       </div>
     </body>
-  );
+  `;
 };
 
 export default ServerErrorPage;
