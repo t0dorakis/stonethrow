@@ -36,8 +36,6 @@ function renderHead(
     `
     );
 
-  console.log(mappedLinks);
-
   return /*html*/ `
     <head>
       <meta charset="UTF-8" />

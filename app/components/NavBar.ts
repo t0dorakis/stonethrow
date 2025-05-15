@@ -1,8 +1,6 @@
 import { create } from "../../lib/Stone";
 
 const navItems = [
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
   { label: "Blog", href: "/blog" },
 ] as const;
 
