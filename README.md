@@ -253,26 +253,26 @@ Each route corresponds to a `Page.tsx` file within a directory matching the URL 
 ### Creating Pages
 
 1. Create a folder structure in `app/pages` that matches your URL path
-2. Add a `Page.tsx` file inside each folder
+2. Add a `Page.ts` file inside each folder
 3. For nested routes, create nested directories
 
 Example page component:
 
-```tsx
-import h from "../../../lib/JSX";
+```typescript
 import Card from "../../components/Card";
 
 const Page = () => {
-  return (
+  return /*html*/ `
     <body>
       <div class="container">
         <h1>About Stone Throw</h1>
         <div class="section">
           <p>This is an about page.</p>
+          ${Card({ title: "Welcome" }, "Card content here")}
         </div>
       </div>
     </body>
-  );
+  `;
 };
 
 export default Page;
@@ -283,7 +283,7 @@ export default Page;
 For nested routes like `/blog/post`:
 
 1. Create the directory structure: `app/pages/blog/post/`
-2. Add a `Page.tsx` file inside that directory
+2. Add a `Page.ts` file inside that directory
 
 This approach makes the routing structure intuitive and visually match the URL paths.
 
@@ -415,34 +415,29 @@ The framework automatically:
 
 ## Usage in Pages
 
-Use components in your pages:
+Use components in your pages with template literals:
 
-```tsx
-import h from "../lib/JSX";
+```typescript
 import Counter from "./components/Counter";
 import Card from "./components/Card";
 
-// Components auto-register themselves when used
-export default () => (
+export default () => /*html*/ `
   <body>
-    {/* Basic usage */}
-    {Counter.ssr({ title: "My Counter" })}
+    <!-- Basic usage -->
+    ${Counter({ title: "My Counter" })}
 
-    {/* With children */}
-    {Counter.ssr(
+    <!-- With children -->
+    ${Counter(
       { title: "Counter with Info" },
       `
       <div class="info">Counter info here</div>
-    `
+      `
     )}
 
-    {/* Component composition */}
-    {Card.ssr(
-      { title: "Card Title" },
-      Counter.ssr({ title: "Nested Counter" })
-    )}
+    <!-- Component composition -->
+    ${Card({ title: "Card Title" }, Counter({ title: "Nested Counter" }))}
   </body>
-);
+`;
 ```
 
 ## Client Registry
@@ -455,10 +450,6 @@ import Counter from "./components/Counter";
 
 export const clientRegistry = new Map([["counter-name", Counter.module]]);
 ```
-
-## Examples
-
-See the `app/pages/CleanDemo.tsx` for examples of component usage patterns.
 
 ## Meta Tags
 

@@ -1,9 +1,11 @@
 ---
-description: 
-globs: 
-alwaysApply: false
+description: Stone Throw Framework Development Guidelines
+globs: *.ts *.tsx *.js *.json *.md *.mdc
 ---
-# Stone Throw Framework Development Guidelines
+---
+description: Stone Throw Framework Development Guidelines
+globs: *.ts *.tsx *.js *.json *.md *.mdc
+---
 
 ## Framework Positioning & Inspiration
 
@@ -69,31 +71,19 @@ alwaysApply: false
 - Store critical information in properties that won't be optimized away
 - Use non-enumerable properties for internal state that must persist
 
-## File Extensions
-
-- Be cautious with explicit .ts/.tsx extensions in imports
-- Production builds might have issues with explicit extensions
-- Let the bundler resolve extensions when possible
-
 ## Component Registration
 
 - Components are auto-registered when rendered
 - Custom elements are defined only once to prevent duplicate registration errors
 - The `init` method must be called to register all components with the browser
 
-## Debugging Tips
-
-- Add strategic `console.debug` calls to trace component registration
-- Compare development and production HTML output to spot rendering differences
-- Examine minified code to identify optimization issues
-
 ## Folder-Based Routing
 
 - Uses Vinxi's router capabilities to map URL paths to folder structures
-- URL paths directly correspond to folder paths with a Page.tsx file:
-  - `/` → `app/pages/Page.tsx`
-  - `/about` → `app/pages/about/Page.tsx`
-  - `/blog/post` → `app/pages/blog/post/Page.tsx`
+- URL paths directly correspond to folder paths with a Page.ts file:
+  - `/` → `app/pages/Page.ts`
+  - `/about` → `app/pages/about/Page.ts`
+  - `/blog/post` → `app/pages/blog/post/Page.ts`
 - Implemented via:
   1. A router config in app.config.js that points to a handler
   2. A page loader utility that maps URL paths to page files
