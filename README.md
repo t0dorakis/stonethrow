@@ -136,7 +136,7 @@ const assets = await clientManifest.inputs[clientManifest.handler].assets();
 2. Transfer server-side registry data to the client:
 
 ```js
-window.FRAMEWORK = {
+window.__STONE__ = {
   componentsToRegister: ${JSON.stringify(componentsToRegister)}
 };
 ```
@@ -245,7 +245,7 @@ Stone Throw includes a folder-based routing system powered by Vinxi:
 Pages are automatically mapped from URL paths to folder structures:
 
 - `/` → `app/pages/Page.tsx`
-- `/about` → `app/pages/about/Page.tsx`  
+- `/about` → `app/pages/about/Page.tsx`
 - `/blog/post` → `app/pages/blog/post/Page.tsx`
 
 Each route corresponds to a `Page.tsx` file within a directory matching the URL path.
@@ -459,3 +459,28 @@ export const clientRegistry = new Map([["counter-name", Counter.module]]);
 ## Examples
 
 See the `app/pages/CleanDemo.tsx` for examples of component usage patterns.
+
+## Meta Tags
+
+The framework includes a `Meta` type and helper function for setting meta tags on pages:
+
+_Server-Side_:
+
+```typescript
+import { setMeta } from "./lib/setMeta";
+
+export Meta = setMeta({
+  title: "My Page Title",
+  metaTags: [
+    { name: "description", content: "My Page Description" },
+    { name: "keywords", content: "My Page Keywords" },
+    ...
+  ],
+});
+```
+
+_Client-Side_:
+
+# TODO: check if client-side head manipulation works correctly
+
+Under the hood, we use [unhead](https://unhead.dev/) to set the meta tags.
