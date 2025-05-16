@@ -47,7 +47,7 @@ export class PagesRouter extends BaseFileSystemRouter {
       path: this.toPath(filePath),
       $page: {
         src: filePath,
-        pick: ["default"],
+        pick: ["default", "Meta"],
       },
     };
   }

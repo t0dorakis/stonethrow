@@ -1,6 +1,7 @@
 import Card from "../components/Card";
 import MiniCounter from "../components/MiniCounter";
 import NavBar from "../components/NavBar";
+import { setMeta } from "../../lib/setMeta";
 
 const HomePage = () => {
   return /*html*/ `
@@ -12,9 +13,22 @@ const HomePage = () => {
           { title: "Counter Collection" },
           [1, 2, 3].map(() => MiniCounter())
         )}
-      </div>
-    </div>
+      </section>
+    </main>
   `;
 };
+
+/**
+ * Optional Meta tags for the home page
+ */
+export const Meta = setMeta({
+  title: "Home",
+  metaTags: [
+    {
+      name: "description",
+      content: "This is the home page",
+    },
+  ],
+});
 
 export default HomePage;

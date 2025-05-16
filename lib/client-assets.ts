@@ -12,7 +12,10 @@ export interface ClientAsset {
  * Load client assets from the manifest
  * @returns An object containing clientAssets and clientEntry path
  */
-export async function loadClientAssets() {
+export async function loadClientAssets(): Promise<{
+  clientAssets: ClientAsset[];
+  clientEntry: string;
+}> {
   try {
     const clientManifest = getManifest("client");
 

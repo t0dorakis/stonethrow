@@ -5,7 +5,7 @@
 const _getHandedOverRegistry = (): string[] | undefined => {
   // get the registry from the window object
   if (typeof window !== "undefined") {
-    return window?.FRAMEWORK?.componentsToRegister;
+    return window?.__STONE__?.componentsToRegister;
   }
 };
 

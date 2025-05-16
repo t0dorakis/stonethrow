@@ -1,22 +1,31 @@
 import { eventHandler } from "vinxi/http";
 import routes from "vinxi/routes";
 import type { PageEvent } from "../lib/types";
-import { routerLogger as logger } from "../lib/logging";
+import { logger } from "../lib/logging";
 import { renderPage } from "../lib/page-renderer";
 import { handleError } from "../lib/error-handler";
+import { Meta } from "../lib/setMeta";
+
+const log = logger.withTag("pages-router");
+
+// Add this type
+type PageComponentWithMeta = ((event: PageEvent) => string) & { Meta?: any };
 
 // Define a type for the route structure based on Vinxi's routes
 interface RouteModule {
   path: string;
   $page?: {
-    import: () => Promise<{ default: (event: PageEvent) => string }>;
+    import: () => Promise<{
+      default: PageComponentWithMeta;
+      Meta?: Meta;
+    }>;
   };
 }
 
 export default eventHandler({
   handler: async (event: PageEvent) => {
     try {
-      logger.info("Handling request for path:", event.path);
+      log.info("Handling request for path:", event.path);
 
       // Find matching route
       const matchedRoute = routes.find((r) => r.path === event.path) as
@@ -29,7 +38,7 @@ export default eventHandler({
         return handleError(event, 404);
       }
 
-      // Import and render the page component
+      // Import the full module including named exports
       const pageModule = await matchedRoute.$page.import();
 
       if (!pageModule.default) {
@@ -39,8 +48,12 @@ export default eventHandler({
         return handleError(event, 404);
       }
 
-      // Render the page
-      return await renderPage(pageModule.default, event);
+      // Attach Meta to the default export function
+      const PageComponent = pageModule.default;
+      PageComponent.Meta = pageModule.Meta;
+
+      // Render the page with the enhanced PageComponent
+      return await renderPage(PageComponent, event);
     } catch (error) {
       logger.error("Fatal router error:", error);
       return handleError(event, 500, error);
