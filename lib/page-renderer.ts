@@ -1,9 +1,9 @@
 import Stone from "./Stone";
 import type { PageEvent } from "./types";
 import { loadClientAssets } from "./client-assets";
-import type { ClientAsset } from "./client-assets";
 import { logger } from "./logging";
-
+import { createHead, transformHtmlTemplate } from "unhead/server";
+import { type Meta } from "./setMeta";
 /**
  * Render the document head with meta tags, title, and client assets
  * @param clientAssets Array of client assets to include in head
@@ -11,41 +11,65 @@ import { logger } from "./logging";
  * @param title Page title
  * @returns Rendered head element
  */
-function renderHead(
-  clientAssets: ClientAsset[],
-  clientEntry: string,
-  title = "Stone Throw"
-) {
-  const mappedAssets = clientAssets
-    .filter((asset) => asset.tag === "style" && asset.children)
-    .map(
-      (asset) => /*html*/ `
-      <style>
-        ${asset.children}
-      </style>
-    `
-    );
+async function getHead(metaSate?: Meta) {
+  const { clientAssets, clientEntry } = await loadClientAssets();
 
-  const mappedLinks = clientAssets
+  const { title, metaTags } = metaSate || {
+    title: "Stone Throw",
+    metaTags: [
+      {
+        name: "description",
+        content:
+          "Stone Throw is a web framework for building web applications with TypeScript and Tailwind CSS.",
+      },
+    ],
+  };
+
+  // TODO: Somehow these links are only added in production. Figure out why.
+  const links = clientAssets
     .filter((asset) => asset.tag === "link" && asset.attrs?.href)
-    .map(
-      (asset) => /*html*/ `
-      <link href="${asset.attrs.href}" ${
-        asset.attrs.rel ? `rel="${asset.attrs.rel}"` : ""
-      } ${asset.attrs.type ? `type="${asset.attrs.type}"` : ""} />
-    `
-    );
+    .map((asset) => ({
+      rel: asset.attrs?.rel,
+      href: asset.attrs?.href,
+      type: asset.attrs?.type,
+    }));
 
-  return /*html*/ `
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>${title}</title>
-      ${mappedAssets}
-      ${mappedLinks}
-      <script type="module" src=${clientEntry} defer ></script>
-    </head>
-  `;
+  // TODO: these appear only in development. Figure out why.
+  const styles = clientAssets
+    .filter((asset) => asset.tag === "style" && asset.children)
+    .map((asset) => {
+      if (asset.children) {
+        return asset.children;
+      }
+    });
+
+  const head = createHead({
+    init: [
+      {
+        htmlAttrs: {
+          lang: "en",
+        },
+      },
+      {
+        title,
+        meta: [
+          { charset: "utf-8" },
+          { name: "viewport", content: "width=device-width, initial-scale=1" },
+          ...(metaTags || []),
+        ],
+        link: links,
+        script: [
+          {
+            src: clientEntry,
+            type: "module",
+            defer: true,
+          },
+        ],
+        style: styles,
+      },
+    ],
+  });
+  return head;
 }
 
 /**
@@ -55,7 +79,7 @@ function renderHead(
 function renderFrameworkScript() {
   return /*html*/ `
     <script type="module">
-        window.FRAMEWORK = {
+        window.__STONE__ = {
           componentsToRegister: ${JSON.stringify(
             Stone.getComponentsToRegister()
           )}
@@ -65,27 +89,42 @@ function renderFrameworkScript() {
 }
 
 /**
+ *
+ * @param parts Takes a list of strings and and combines them to the HTML Page with a head
+ */
+const _templateHtml = (...parts: string[]) => {
+  return /*html*/ `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <!--head-tags-->
+      </head>
+      <body>
+        ${parts.join("\n")}
+      </body>
+    </html>
+  `;
+};
+
+/**
  * Render a complete HTML page with client assets and registry
  * @param PageComponent The component to render in the page
  * @param event The page event
  * @returns Rendered HTML string
  */
 export async function renderPage(
-  PageComponent: (event: PageEvent) => string,
+  PageComponent: (event: PageEvent) => string & { Meta?: any },
   event: PageEvent
 ) {
   try {
-    // Load client assets
-    const { clientAssets, clientEntry } = await loadClientAssets();
+    // Access the Meta export if it exists
+    const meta = "Meta" in PageComponent ? PageComponent.Meta : undefined;
+    const head = await getHead(meta);
+    const page = PageComponent(event);
 
-    // Render the page with client assets and registry
-    return /*html*/ `
-      <html lang="en">
-        ${renderHead(clientAssets, clientEntry)}
-        ${PageComponent(event)}
-        ${renderFrameworkScript()}
-      </html>
-    `;
+    const template = _templateHtml(page, renderFrameworkScript());
+
+    return await transformHtmlTemplate(head, template);
   } catch (error) {
     logger.error("Error in renderPage:", error);
     return fallbackErrorPage(error);
@@ -108,22 +147,13 @@ export async function renderErrorWithComponent(
     // Set status code on the response
     event.node.res.statusCode = statusCode;
 
-    // Load client assets (to include stylesheets, etc.)
-    const { clientAssets, clientEntry } = await loadClientAssets();
+    const head = await getHead({
+      title: "Page not found",
+    });
 
-    // Create a title based on the status code
-    const title =
-      statusCode === 404
-        ? "Not Found - Stone Throw"
-        : `Error ${statusCode} - Stone Throw`;
+    const template = _templateHtml(ErrorComponent(event));
 
-    return /*html*/ `
-      <html lang="en">
-        ${renderHead(clientAssets, clientEntry, title)}
-        ${ErrorComponent(event)}
-        ${renderFrameworkScript()}
-      </html>
-    `;
+    return transformHtmlTemplate(head, template);
   } catch (error) {
     logger.error("Failed to render custom error page:", error);
     // Fall back to basic error page
@@ -135,12 +165,7 @@ export async function renderErrorWithComponent(
  * Render a simple fallback error page when custom error pages fail
  */
 export function fallbackErrorPage(error: unknown | Error) {
-  return /*html*/ `
-    <html lang="en">
-      <body>
-        <h1>Error</h1>
-        <pre>${JSON.stringify(error, null, 2)}</pre>
-      </body>
-    </html>
-  `;
+  return _templateHtml(/*html*/ `
+    <h1>Error</h1>,
+    <pre>{JSON.stringify(error, null, 2)}</pre>`);
 }

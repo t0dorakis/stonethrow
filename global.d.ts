@@ -1,4 +1,10 @@
+import { createHead } from "unhead/client";
 declare global {
-  const h: typeof import("./lib/JSX").default;
+  interface Window {
+    __UNHEAD__?: ReturnType<typeof createHead>;
+    __STONE__?: {
+      componentsToRegister?: string[];
+    };
+  }
 }
 export {};

@@ -1,5 +1,8 @@
+import { createHead } from "unhead/client";
+
 interface Window {
-  FRAMEWORK?: {
+  __UNHEAD__?: ReturnType<typeof createHead>;
+  __STONE__?: {
     componentsToRegister?: string[];
   };
 }

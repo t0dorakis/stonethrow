@@ -10,11 +10,6 @@ export const logger = createConsola({
   },
 });
 
-// Create scoped loggers for different parts of the application
-export const routerLogger = logger.withTag("router");
-export const pageLoaderLogger = logger.withTag("page-loader");
-export const componentLogger = logger.withTag("component");
-
 // Add a special reporter for debug page that collects recent logs
 const recentLogs: Array<{ type: string; message: string; timestamp: Date }> =
   [];

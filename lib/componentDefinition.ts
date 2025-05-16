@@ -6,7 +6,9 @@ import type {
   Props,
   ComponentWithInternalProps,
 } from "./types";
+import { logger } from "./logging";
 
+const log = logger.withTag("componentDefinition");
 /**
  * Validate a custom element name
  * Custom element names must contain a hyphen and start with a letter
@@ -205,13 +207,19 @@ export function createComponent(
  */
 export const create = new Proxy(createComponent, {
   apply(target, thisArg, args) {
+    log.info("target", target);
+    log.info("thisArg", thisArg);
+    log.info("args", args);
+
     // Create the component without final name
     const comp = target.apply(thisArg, args);
+    log.info("comp", comp);
 
     // Return a proxy that will capture the variable name during assignment
     return new Proxy(comp, {
       // This runs when the component is assigned to a variable
       set(obj, prop, value) {
+        log.info("set", obj, prop, value);
         if (prop === "name" && typeof value === "string") {
           // When the name property is set during variable assignment
           obj.__setComponentName(value);
@@ -223,7 +231,7 @@ export const create = new Proxy(createComponent, {
         if (prop === "componentName" || prop === "_$$name") {
           // Force access to prevent removal during minification
           const name = target[prop];
-          console.debug(`Component property ${String(prop)} accessed:`, name);
+          logger.info(`Component property ${String(prop)} accessed:`, name);
           // If componentName is accessed, make sure it's not optimized away
           return name;
         }
