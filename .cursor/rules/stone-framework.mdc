@@ -2,11 +2,6 @@
 description: Stone Throw Framework Development Guidelines
 globs: *.ts *.tsx *.js *.json *.md *.mdc
 ---
----
-description: Stone Throw Framework Development Guidelines
-globs: *.ts *.tsx *.js *.json *.md *.mdc
----
-
 ## Framework Positioning & Inspiration
 
 - **Enhance Similarities**: Stone Throw shares philosophical alignment with the Enhance framework
