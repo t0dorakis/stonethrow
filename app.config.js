@@ -2,7 +2,7 @@ import { createApp } from "vinxi";
 import { resolve } from "node:path";
 import { PagesRouter } from "./lib/fileBasedRouter.ts";
 import tailwindcss from "@tailwindcss/vite";
-import stoneAutoRegistry from "./lib/vite-plugin-stone-auto-registry";
+import stoneAutoRegistry from "./packages/vite-plugin-stone-auto-registry";
 
 const getPreset = () => {
   if (process.env.VERCEL === "1") {
