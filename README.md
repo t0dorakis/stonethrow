@@ -320,7 +320,7 @@ Create components with a clean, declarative API:
 import { create } from "./lib/Stone";
 
 // The component tag name is derived from the variable name
-// Counter -> <x-counter>, MiniButton -> <mini-button>
+// Counter -> <s-counter>, MiniButton -> <mini-button>
 const Counter = create({
   // Component state (unique for each instance)
   state: () => ({
@@ -407,7 +407,7 @@ Custom element names must follow these rules:
 The framework automatically:
 
 - Derives the component tag name from the variable name (converted to kebab-case)
-- Adds an 'x-' prefix if the name doesn't contain a hyphen
+- Adds an 's-' prefix if the name doesn't contain a hyphen
 - Creates per-instance state for each component
 - Wraps your render output with the component tag
 - Registers components when they're used

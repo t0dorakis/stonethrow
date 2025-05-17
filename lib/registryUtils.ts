@@ -1,3 +1,7 @@
+import { logger } from "./logging";
+
+const log = logger.withTag("registryUtils");
+
 /**
  * @context: client-side
  * @description: get the registry from the window object
@@ -11,24 +15,38 @@ const _getHandedOverRegistry = (): string[] | undefined => {
 
 /**
  * @context: client-side
- * @description: initialize all registered custom elements
+ * @description: asynchronously initialize all registered custom elements by loading the modules
  */
-export function initializeCustomElements(
-  clientRegistry: Map<string, () => void>
-): void {
+export async function initializeCustomElements(
+  stoneComponentRegistry: Record<
+    string,
+    () => Promise<{ default: { module: () => void } }>
+  >
+): Promise<void> {
   const serverRegistry = _getHandedOverRegistry(); // this is an array of component names
-
-  console.log("initializeCustomElements");
+  log.info("initializeCustomElements", serverRegistry);
   if (serverRegistry) {
-    for (const componentName of serverRegistry) {
-      const moduleInit = clientRegistry.get(componentName);
-      if (moduleInit) {
-        console.log("initializing module", componentName);
-        moduleInit();
+    for (const name of serverRegistry) {
+      const loader =
+        stoneComponentRegistry[name as keyof typeof stoneComponentRegistry];
+      if (loader) {
+        const mod = await loader();
+        if (mod.default && mod.default.module) {
+          mod.default.module();
+        }
       } else {
-        console.warn(`Module not found for component: ${componentName}`);
+        log.warn(`No client module found for component: ${name}`);
       }
     }
+  }
+}
+
+// Example: dynamically load and register only needed components
+export async function loadAndRegisterNeededComponents(
+  componentNames: string[]
+) {
+  log.info("loadAndRegisterNeededComponents", componentNames);
+  for (const name of componentNames) {
   }
 }
 

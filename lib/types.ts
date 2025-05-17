@@ -12,7 +12,6 @@ export interface ComponentWithInternalProps {
   _$$name?: string;
   componentName?: string;
   ssr: (props?: Props, children?: unknown) => string;
-  __setComponentName: (name: string) => ComponentWithInternalProps;
 }
 
 export type Props = Record<string, unknown>;

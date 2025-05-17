@@ -2,6 +2,7 @@ import { createApp } from "vinxi";
 import { resolve } from "node:path";
 import { PagesRouter } from "./lib/fileBasedRouter.ts";
 import tailwindcss from "@tailwindcss/vite";
+import stoneAutoRegistry from "./lib/vite-plugin-stone-auto-registry";
 
 const getPreset = () => {
   if (process.env.VERCEL === "1") {
@@ -43,7 +44,13 @@ export default createApp({
       type: "http",
       target: "server",
       handler: "./app/pages-router.ts",
-      plugins: () => [tailwindcss()],
+      plugins: () => [
+        tailwindcss(),
+        stoneAutoRegistry({
+          componentsDir: "app/components",
+          output: "app/stone.generated.ts",
+        }),
+      ],
       // https://vinxi.vercel.app/guide/file-system-routing.html
       routes: (router, app) => {
         return new PagesRouter(
