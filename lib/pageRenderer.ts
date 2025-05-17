@@ -1,6 +1,6 @@
 import Stone from "./Stone";
 import type { PageEvent } from "./types";
-import { loadClientAssets } from "./client-assets";
+import { loadClientAssets } from "./clientAssets";
 import { logger } from "./logging";
 import { createHead, transformHtmlTemplate } from "unhead/server";
 import { type Meta } from "./setMeta";

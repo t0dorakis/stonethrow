@@ -2,8 +2,8 @@ import { eventHandler } from "vinxi/http";
 import routes from "vinxi/routes";
 import type { PageEvent } from "../lib/types";
 import { logger } from "../lib/logging";
-import { renderPage } from "../lib/page-renderer";
-import { handleError } from "../lib/error-handler";
+import { renderPage } from "../lib/pageRenderer";
+import { handleError } from "../lib/errorHandler";
 import { Meta } from "../lib/setMeta";
 
 const log = logger.withTag("pages-router");
