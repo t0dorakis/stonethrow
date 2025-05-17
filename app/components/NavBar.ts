@@ -1,10 +1,8 @@
 import { create } from "../../lib/Stone";
 
-const navItems = [
-  { label: "Blog", href: "/blog" },
-] as const;
+const navItems = [{ label: "Blog", href: "/blog" }] as const;
 
-const NavBar = create({
+const NavBar = create("nav-bar", {
   render: (state, props, children) => {
     return /*html*/ `
       <section class="flexp-4 w-auto items-start mx-8 mt-4">

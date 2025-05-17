@@ -20,7 +20,6 @@ declare global {
     componentName: string;
     _$$name?: string;
     ssr: (props?: Record<string, unknown>, children?: unknown) => string;
-    __setComponentName: (name: string) => StoneComponent;
   }
 }
 

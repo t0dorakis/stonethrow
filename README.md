@@ -141,48 +141,53 @@ window.__STONE__ = {
 };
 ```
 
-### Progressive Enhancement with Custom Elements
+## Progressive Enhancement with Custom Elements
 
 Unlike traditional frameworks that use hydration to "reconnect" server-rendered HTML to a virtual DOM:
 
-1. Our custom elements work with the Light DOM (not Shadow DOM):
+- Our custom elements work with the Light DOM (not Shadow DOM).
+- On the server, only the components actually rendered for a page are registered for enhancement.
+- On the client, a small registry (auto-generated at build time) enables **on-demand, per-page loading** of only the components actually used in the SSR HTML.
+- This means:
+  - **No global hydration**: Only the components present in the SSR output are enhanced.
+  - **No manual registry maintenance**: The Vite plugin scans your components and generates the registry automatically.
+  - **Tree-shakable and efficient**: Only the code for components used on a page is loaded.
 
-```js
-constructor() {
-  super();
-  // Don't use shadow DOM to enable progressive enhancement
-  // We'll work with the light DOM instead
-}
-```
+### How It Works
 
-2. In `connectedCallback()`, elements check if server-rendered content exists:
+1. **Component Usage**
 
-```js
-connectedCallback() {
-  // Get the button that was server-rendered or create one if it doesn't exist
-  this.button = this.querySelector("button");
-  if (!this.button) {
-    // If no server-rendered button exists, create it
-    this.button = document.createElement("button");
-    // ...
-  }
-}
-```
+   - Use your components in pages as before:
 
-This approach means the components:
+     ```typescript
+     import Card from "../../components/Card";
+     import MiniCounter from "../../components/MiniCounter";
+     ...
+     ${Card({ title: "Demo" }, MiniCounter())}
+     ```
 
-- Work without JavaScript
-- Progressively enhance with JavaScript when available
-- Don't require a full client-side hydration process
+2. **Automatic Registration**
+   - When a component is rendered on the server, it is automatically marked for enhancement.
+   - The server passes a list of used component names to the client via `window.__STONE__`.
+3. **Auto-Generated Registry**
 
-### Debugging Tips
+   - A Vite plugin scans your components directory and generates a registry mapping component names (e.g. `s-card`, `mini-counter`) to dynamic import functions.
+   - Example (auto-generated):
 
-When troubleshooting Vinxi applications:
+     ```typescript
+     // app/stone.generated.ts
+     export const stoneComponentRegistry = {
+       "s-card": () => import("./components/Card"),
+       "mini-counter": () => import("./components/MiniCounter"),
+       ...
+     } as const;
+     ```
 
-1. Check the server logs for the assets being found and loaded
-2. Use browser dev tools to see what scripts are being requested and potentially failing
-3. Check the network tab to see if `.ts` files are being requested directly (they shouldn't be)
-4. Make sure all imports in client code use relative paths without file extensions
+4. **Progressive Enhancement**
+   - On the client, only the components present in the SSR HTML are dynamically imported and enhanced.
+   - No hydration of unused components, no global registry bloat.
+
+### Example: Client Enhancement
 
 ## Common Issues & Solutions
 
@@ -320,7 +325,7 @@ Create components with a clean, declarative API:
 import { create } from "./lib/Stone";
 
 // The component tag name is derived from the variable name
-// Counter -> <x-counter>, MiniButton -> <mini-button>
+// Counter -> <s-counter>, MiniButton -> <mini-button>
 const Counter = create({
   // Component state (unique for each instance)
   state: () => ({
@@ -407,7 +412,7 @@ Custom element names must follow these rules:
 The framework automatically:
 
 - Derives the component tag name from the variable name (converted to kebab-case)
-- Adds an 'x-' prefix if the name doesn't contain a hyphen
+- Adds an 's-' prefix if the name doesn't contain a hyphen
 - Creates per-instance state for each component
 - Wraps your render output with the component tag
 - Registers components when they're used

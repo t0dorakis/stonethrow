@@ -1,51 +1,38 @@
 ---
 description: Stone Throw Framework Development Guidelines
 globs: *.ts *.tsx *.js *.json *.md *.mdc
+alwaysApply: false
 ---
-## Framework Positioning & Inspiration
+# Framework Positioning & Inspiration
 
-- **Enhance Similarities**: Stone Throw shares philosophical alignment with the Enhance framework
-  - Focus on SSR-rendered custom elements without client-side hydration
-  - Progressive enhancement as a core principle
-  - Both aim for file-based routing (Stone will implement this with Vinxi)
-- **Key Differences**:
-  - Stone Throw embraces the React ecosystem more than Enhance
-  - Stone combines modern tooling (Vinxi, Tailwind) with light custom elements
-  - Enhance relies more strictly on absolute web standards
-  - Stone's USP is balancing modern developer experience with performant, standards-based output
-- **Future Direction**:
-  - Look to Enhance for inspiration on API design while maintaining React ecosystem advantages
-  - Continue leveraging React ecosystem tools while delivering lightweight components
+- **Philosophy**: SSR-first, progressive enhancement, inspired by Enhance but leverages modern UnJS tools
 
-## Core Technologies
+- **Core**:
 
-- Custom Elements: The framework builds on the Web Components standard (light)
-- JavaScript Proxies: Used for variable name capture and component definition
-- Signals: Provides reactive state management for components
-- Server-Side Rendering: Light Webcomponnet Components can render on server with hydration
-- Progressive Enhancement: Works without JavaScript, enhanced when available
+  - Uses SSR rendered custom-elements (Light Web Components).
+  - State is managed with signals; each instance gets its own state.
+  - Progressive Enhancement.
+
+- **Registration**:
+
+  - Components auto-register on SSR render.
+  - Custom elements are defined once; `Stone.init(someRegistry)` registers all on the client.
+
+- **Routing**:
+  - Folder-based routing: URL paths map to Page.ts files in app/pages/.
+  - Vinxi router (`app.config.js`) and page loader utilities handle mapping.
 
 ## Important Files
 
+- `app/client.ts`: Client entry point
+- `app/pages-router.ts`: Server entry point
+- `app.config.json`: defines the entry points (vinxi)
 - `lib/Stone.ts`: Main export file with public API
 - `lib/componentDefinition.ts`: Contains the core component creation logic
+- `lib/pageRenderer.ts`: Combines the Head (unhead) with the content and links the clientAssets
 - `lib/registryUtils.ts`: Handles component registration with the browser
 - `lib/sgnls.ts`: Implements the reactive state system
 - `lib/types.ts`: TypeScript definitions for the framework
-
-## Component Naming Conventions
-
-- Component names must contain a hyphen to be valid custom elements
-- Use kebab-case for HTML element names
-- Variable names are automatically converted to component names
-
-## Proxy-based Variable Name Capture
-
-- The framework uses JavaScript proxies to capture variable names during assignment
-- In production builds, ensure component names are preserved by:
-  - Using the `_$$name` property with non-enumerable configuration
-  - Implementing getter/setter methods that prevent optimization
-  - Avoiding direct access to variable names that could be mangled
 
 ## State Management
 
@@ -58,13 +45,6 @@ globs: *.ts *.tsx *.js *.json *.md *.mdc
 - Components are automatically registered when rendered server-side
 - Always wrap component content with the appropriate tag
 - Use the `ssr` method for explicit server rendering needs
-
-## Production Build Considerations
-
-- Avoid relying on variable names that might be mangled in production
-- Minification can eliminate variable names used for component identification
-- Store critical information in properties that won't be optimized away
-- Use non-enumerable properties for internal state that must persist
 
 ## Component Registration
 
@@ -82,4 +62,4 @@ globs: *.ts *.tsx *.js *.json *.md *.mdc
 - Implemented via:
   1. A router config in app.config.js that points to a handler
   2. A page loader utility that maps URL paths to page files
-  3. A convention of putting Page.tsx at each path level
+  3. A convention of putting Page.ts at each path level

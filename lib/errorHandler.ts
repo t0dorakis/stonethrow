@@ -1,6 +1,6 @@
 import type { PageEvent } from "./types";
 import { logger } from "./logging";
-import { renderErrorWithComponent, fallbackErrorPage } from "./page-renderer";
+import { renderErrorWithComponent, fallbackErrorPage } from "./pageRenderer";
 
 /**
  * Attempt to import a custom error page component

@@ -1,7 +1,7 @@
 import { create } from "../../lib/Stone";
 
 // Minimal counter component - name will be derived from variable name (MiniCounter -> mini-counter)
-const MiniCounter = create({
+const MiniCounter = create("mini-counter", {
   // Define component state
   state: () => ({
     count: 0,
