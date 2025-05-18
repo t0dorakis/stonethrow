@@ -1,6 +1,6 @@
 // Export component-related functionality
-export { createComponent, create } from "../componentDefinition";
-export { initializeCustomElements } from "../registryUtils";
+export { createComponent, create } from "../core/componentDefinition";
+export { initializeCustomElements } from "../core/registryUtils";
 export type {
   ComponentOptions,
   ComponentWithInternalProps,

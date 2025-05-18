@@ -1,4 +1,4 @@
-import { logger } from "./logging";
+import { logger } from "../utils/logging";
 
 const log = logger.withTag("registryUtils");
 

@@ -1,5 +1,5 @@
 import { getManifest } from "vinxi/manifest";
-import { logger } from "./logging";
+import { logger } from "../utils/logging";
 
 // Define the client asset type
 export interface ClientAsset {

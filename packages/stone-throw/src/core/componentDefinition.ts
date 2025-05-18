@@ -1,11 +1,11 @@
 import { markComponentForRegistration } from "./registryUtils";
-import { signal } from "./sgnls";
+import { signal } from "../state/sgnls";
 import type {
   ComponentOptions,
   Props,
   ComponentWithInternalProps,
-} from "./types";
-import { logger } from "./logging";
+} from "../types";
+import { logger } from "../utils/logging";
 
 const log = logger.withTag("componentDefinition");
 /**

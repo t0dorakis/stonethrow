@@ -1,4 +1,4 @@
-import type { SignalType } from "./sgnls";
+import type { SignalType } from "./state/sgnls";
 
 // TODO: import this from vinxi / H3, somehow the build is failing
 export interface PageEvent {

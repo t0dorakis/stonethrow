@@ -1,9 +1,9 @@
-import { getComponentsToRegister } from "./registryUtils";
-import type { PageEvent } from "./types";
-import { loadClientAssets } from "./clientAssets";
-import { logger } from "./logging";
+import { getComponentsToRegister } from "../core/registryUtils";
+import type { PageEvent } from "../types";
+import { loadClientAssets } from "../core/clientAssets";
+import { logger } from "../utils/logging";
 import { createHead, transformHtmlTemplate } from "unhead/server";
-import { type Meta } from "./setMeta";
+import { type Meta } from "../head/setMeta";
 /**
  * Render the document head with meta tags, title, and client assets
  * @param clientAssets Array of client assets to include in head

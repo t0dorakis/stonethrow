@@ -1,5 +1,5 @@
-import type { PageEvent } from "./types";
-import { logger } from "./logging";
+import type { PageEvent } from "../types";
+import { logger } from "../utils/logging";
 import { renderErrorWithComponent, fallbackErrorPage } from "./pageRenderer";
 
 /**

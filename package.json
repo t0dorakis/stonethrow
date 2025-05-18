@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vinxi dev",
     "build": "vinxi build",
-    "start": "vinxi start"
+    "start": "vinxi start",
+    "build:all": "npm run build --workspaces"
   },
   "dependencies": {
     "stone-throw": "workspace:*",
