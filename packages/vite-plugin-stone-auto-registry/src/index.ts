@@ -45,7 +45,9 @@ async function generateRegistry(options: StoneAutoRegistryOptions) {
 export const stoneComponentRegistry = {} as const;
 `;
     await fs.writeFile(absOutput, content, "utf-8");
-    console.log(`[stone] Generated empty component registry at ${output}`);
+    console.log(
+      `[stone-auto-registry] Generated empty component registry at ${output}`
+    );
     return;
   }
 
@@ -81,7 +83,7 @@ ${entries.join(",\n")}
   await fs.mkdir(outputDir, { recursive: true });
 
   await fs.writeFile(absOutput, content, "utf-8");
-  console.log(`[stone] Generated component registry at ${output}`);
+  console.log(`stone-auto-registry] Generated component registry at ${output}`);
 }
 
 export default function stoneAutoRegistry(
