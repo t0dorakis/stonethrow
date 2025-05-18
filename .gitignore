@@ -7,3 +7,6 @@ node_modules
 
 .vscode/settings.json
 _proto-scripts/
+
+# ignore all generated files
+*.generated.ts

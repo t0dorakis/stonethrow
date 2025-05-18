@@ -13,6 +13,12 @@ const getPreset = () => {
   return {};
 };
 
+// Create a shared plugin config for consistency
+const stoneRegistryConfig = {
+  componentsDir: "app/components",
+  output: "app/stone.generated.ts", // Match the exact import path
+};
+
 export default createApp({
   ...getPreset(),
   routers: [
@@ -28,7 +34,7 @@ export default createApp({
       handler: "./app/client.ts",
       base: "/_build",
       target: "browser",
-      plugins: () => [tailwindcss()],
+      plugins: () => [tailwindcss(), stoneAutoRegistry(stoneRegistryConfig)],
       build: {
         target: "browser",
         outDir: "./.vinxi/build/client",
@@ -44,13 +50,7 @@ export default createApp({
       type: "http",
       target: "server",
       handler: "./app/pages-router.ts",
-      plugins: () => [
-        tailwindcss(),
-        stoneAutoRegistry({
-          componentsDir: "app/components",
-          output: "app/stone.generated.ts",
-        }),
-      ],
+      plugins: () => [tailwindcss(), stoneAutoRegistry(stoneRegistryConfig)],
       // https://vinxi.vercel.app/guide/file-system-routing.html
       routes: (router, app) => {
         return new PagesRouter(
