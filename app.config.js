@@ -50,7 +50,7 @@ export default createApp({
       type: "http",
       target: "server",
       handler: "./app/pages-router.ts",
-      plugins: () => [tailwindcss(), stoneAutoRegistry(stoneRegistryConfig)],
+      plugins: () => [tailwindcss()],
       // https://vinxi.vercel.app/guide/file-system-routing.html
       routes: (router, app) => {
         return new PagesRouter(
