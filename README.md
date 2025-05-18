@@ -37,31 +37,22 @@ npm run start
 
   - Reactive state with cross-component communication
 
-- [ ] **Page Routing**
+- [x] **Page Routing**
 
   - Server-side routing with no client-side navigation
   - Route parameters and dynamic routes
   - Nested routes and layouts
   - Leveraging Vinxi for auto-generating file-based routes
 
-- [ ] **Async Component Loading**
+- [x] **Async Component Loading**
 
   - On-demand loading to reduce bundle size
 
-- [ ] **Streamlined Component Creation**
+- [x] **Streamlined Component Creation**
 
   - Less boilerplate for defining components
   - Simplified API for common patterns
   - Auto-registration of components
-
-- [ ] **Component Abstractions**
-
-  - Higher-level patterns and reusable logic
-
-- [ ] **Developer Experience**
-
-  - Simplified configuration and better abstractions
-  - Better error messages and debugging
 
 - [ ] **Testing**
   - Unit and integration tests for basic functionality
@@ -81,12 +72,6 @@ const clientManifest = getManifest("client");
 const assets = await clientManifest.inputs[clientManifest.handler].assets();
 ```
 
-3. When the server tries to directly reference `.ts` files in paths or imports, they won't be processed by Vinxi and will cause browser errors:
-
-```
-Loading failed for the module with source "http://localhost:3000/app/clientRegistry.ts"
-```
-
 ### Router Configuration
 
 The order and configuration of routers in `app.config.js` is critical:
@@ -98,7 +83,10 @@ The order and configuration of routers in `app.config.js` is critical:
   handler: "./app/client.js",
   base: "/_build",
   target: "browser",
-  plugins: () => [FrameWorkPlugin()],
+  plugins: () => [tailwindcss(), stoneAutoRegistry({
+    componentsDir: "app/components",
+    output: "app/stone.generated.ts",
+  })],
 }
 ```
 
@@ -167,8 +155,10 @@ Unlike traditional frameworks that use hydration to "reconnect" server-rendered 
      ```
 
 2. **Automatic Registration**
+
    - When a component is rendered on the server, it is automatically marked for enhancement.
    - The server passes a list of used component names to the client via `window.__STONE__`.
+
 3. **Auto-Generated Registry**
 
    - A Vite plugin scans your components directory and generates a registry mapping component names (e.g. `s-card`, `mini-counter`) to dynamic import functions.
@@ -211,20 +201,12 @@ Unlike traditional frameworks that use hydration to "reconnect" server-rendered 
 - Properly configure router priorities in `app.config.js`
 - Ensure router types and order follow Vinxi's priority system
 
-### 3. Custom Element Registry Transfer
-
-**Problem:** Component registry isn't available on the client.
-
-**Solution:**
-
-- Pass component registry from server to client using `window.FRAMEWORK`
-- Use a consistent naming convention for components
-
 ## References
 
 - [Vinxi Documentation](https://vinxi.vercel.app/)
 - [Vinxi Examples](https://github.com/nksaraf/vinxi/tree/main/examples)
 - [Web Components - MDN](https://developer.mozilla.org/en-US/docs/Web/Web_Components)
+- [Nitro Documentation](https://nitro.unjs.io/)
 
 ## Acknowledgments
 
@@ -249,11 +231,11 @@ Stone Throw includes a folder-based routing system powered by Vinxi:
 
 Pages are automatically mapped from URL paths to folder structures:
 
-- `/` → `app/pages/Page.tsx`
-- `/about` → `app/pages/about/Page.tsx`
-- `/blog/post` → `app/pages/blog/post/Page.tsx`
+- `/` → `app/pages/Page.ts`
+- `/about` → `app/pages/about/Page.ts`
+- `/blog/post` → `app/pages/blog/post/Page.ts`
 
-Each route corresponds to a `Page.tsx` file within a directory matching the URL path.
+Each route corresponds to a `Page.ts` file within a directory matching the URL path.
 
 ### Creating Pages
 
@@ -322,11 +304,11 @@ Stone Throw shares philosophical alignment with the Enhance framework in its foc
 Create components with a clean, declarative API:
 
 ```typescript
-import { create } from "./lib/Stone";
+import { create } from "stone-throw/components";
 
 // The component tag name is derived from the variable name
 // Counter -> <s-counter>, MiniButton -> <mini-button>
-const Counter = create({
+const Counter = create("counter", {
   // Component state (unique for each instance)
   state: () => ({
     count: 0,
@@ -363,13 +345,6 @@ const Counter = create({
   cleanup: (element, state) => {
     // Clean up event listeners, subscriptions, etc.
   },
-});
-
-// For backward compatibility or explicit naming:
-import { create } from "./lib/Stone";
-
-const ExplicitComponent = create("custom-name", {
-  // Component options...
 });
 ```
 
