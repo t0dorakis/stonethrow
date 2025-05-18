@@ -1,5 +1,5 @@
 import { markComponentForRegistration } from "./registryUtils";
-import signal from "./sgnls";
+import { signal } from "./sgnls";
 import type {
   ComponentOptions,
   Props,
@@ -168,6 +168,5 @@ export function createComponent(
 
   return Component;
 }
-
 // short alias for createComponent
 export const create = createComponent;

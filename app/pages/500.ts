@@ -1,4 +1,4 @@
-import type { PageEvent } from "../../lib/types";
+import type { PageEvent } from "stone-throw/types";
 
 /**
  * Custom 500 server error page

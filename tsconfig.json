@@ -1,12 +1,22 @@
 {
-	"compilerOptions": {
-		"jsx": "react",
-		"jsxFactory": "h",
-		"target": "ES2020",
-		"module": "ESNext",
-		"moduleResolution": "Node",
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"resolveJsonModule": true
-	}
+  "compilerOptions": {
+    "jsx": "react",
+    "jsxFactory": "h",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "stone-throw": ["packages/stone-throw/src/index.ts"],
+      "stone-throw/*": ["packages/stone-throw/src/*"],
+      "vite-plugin-stone-auto-registry": [
+        "packages/vite-plugin-stone-auto-registry/src/index.ts"
+      ]
+    }
+  },
+  "include": ["app/**/*", "packages/**/*"],
+  "exclude": ["node_modules", "**/node_modules/*", "**/dist/*"]
 }

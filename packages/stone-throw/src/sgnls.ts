@@ -1,6 +1,7 @@
 /**
  *  based on https://github.com/robinloeffel/sgnls
  */
+export type SignalType<T> = ReturnType<typeof signal<T>>;
 
 /** function that gets executed when a signal changes */
 type Effect<T> = (value: T) => void;
@@ -8,7 +9,7 @@ type Effect<T> = (value: T) => void;
 /** function that manipulates the value of a signal */
 type Updater<T> = (oldValue: T) => T;
 
-interface Signal<T> {
+export interface Signal<T> {
   /** return the current value of the signal */
   get: () => T;
 
@@ -30,7 +31,9 @@ const tick = (callback: VoidFunction) => {
   globalThis.queueMicrotask(callback);
 };
 
-const signal = <SignalType>(initialValue: SignalType): Signal<SignalType> => {
+export const signal = <SignalType>(
+  initialValue: SignalType
+): Signal<SignalType> => {
   let currentValue = initialValue;
   let invokingEffects = false;
   let effects: Effect<SignalType>[] = [];
@@ -73,5 +76,3 @@ const signal = <SignalType>(initialValue: SignalType): Signal<SignalType> => {
     },
   };
 };
-
-export default signal;

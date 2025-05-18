@@ -1,6 +1,12 @@
 import { BaseFileSystemRouter } from "vinxi/fs-router";
 import type { FileSystemRouterConfig } from "vinxi/fs-router";
 
+// Define an interface for the app parameter
+export interface AppOptions {
+  // Add properties as needed
+  [key: string]: any;
+}
+
 /**
  * File System Routing
  * Example: /app/pages/about/Page.tsx -> /about
@@ -10,7 +16,11 @@ export class PagesRouter extends BaseFileSystemRouter {
   // Explicitly declare the options property with the correct type
   protected options: FileSystemRouterConfig;
 
-  constructor(options: FileSystemRouterConfig, router: unknown, app: unknown) {
+  constructor(
+    options: FileSystemRouterConfig,
+    router: unknown,
+    app: AppOptions
+  ) {
     super(options, router, app);
     this.options = options; // Store options explicitly
   }

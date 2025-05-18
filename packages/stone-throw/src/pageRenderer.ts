@@ -1,4 +1,4 @@
-import Stone from "./Stone";
+import { getComponentsToRegister } from "./registryUtils";
 import type { PageEvent } from "./types";
 import { loadClientAssets } from "./clientAssets";
 import { logger } from "./logging";
@@ -80,9 +80,7 @@ function renderFrameworkScript() {
   return /*html*/ `
     <script type="module">
         window.__STONE__ = {
-          componentsToRegister: ${JSON.stringify(
-            Stone.getComponentsToRegister()
-          )}
+          componentsToRegister: ${JSON.stringify(getComponentsToRegister())}
         };
     </script>
   `;
@@ -113,13 +111,23 @@ const _templateHtml = (...parts: string[]) => {
  * @returns Rendered HTML string
  */
 export async function renderPage(
-  PageComponent: (event: PageEvent) => string & { Meta?: any },
+  PageComponent: (event: PageEvent) => string & { Meta?: Meta },
   event: PageEvent
 ) {
   try {
-    // Access the Meta export if it exists
-    const meta = "Meta" in PageComponent ? PageComponent.Meta : undefined;
-    const head = await getHead(meta);
+    // Access the Meta export if it exists and validate it
+    let metaValue: Meta | undefined = undefined;
+
+    if ("Meta" in PageComponent && PageComponent.Meta) {
+      // Validate it's a proper Meta object
+      const maybeMeta = PageComponent.Meta;
+      if (typeof maybeMeta === "object" && maybeMeta !== null) {
+        // It's a valid Meta object
+        metaValue = maybeMeta as Meta;
+      }
+    }
+
+    const head = await getHead(metaValue);
     const page = PageComponent(event);
 
     const template = _templateHtml(page, renderFrameworkScript());
@@ -134,13 +142,13 @@ export async function renderPage(
 /**
  * Render a page with a custom error component
  * @param event The page event
- * @param ErrorComponent The error component to render
+ * @param ErrorComponent The error component to render, or null to use default error
  * @param statusCode HTTP status code (defaults to 404)
  * @returns Rendered HTML string
  */
 export async function renderErrorWithComponent(
   event: PageEvent,
-  ErrorComponent: (event: PageEvent) => string,
+  ErrorComponent: ((event: PageEvent) => string) | null,
   statusCode = 404
 ) {
   try {
@@ -148,9 +156,10 @@ export async function renderErrorWithComponent(
     event.node.res.statusCode = statusCode;
 
     const head = await getHead({
-      title: "Page not found",
+      title: `Error ${statusCode}`,
     });
 
+    if (!ErrorComponent) throw new Error("ErrorComponent is required");
     const template = _templateHtml(ErrorComponent(event));
 
     return transformHtmlTemplate(head, template);
@@ -164,8 +173,23 @@ export async function renderErrorWithComponent(
 /**
  * Render a simple fallback error page when custom error pages fail
  */
-export function fallbackErrorPage(error: unknown | Error) {
+export function fallbackErrorPage(error: unknown): string {
+  let errorContent = "Unknown error";
+
+  try {
+    if (error instanceof Error) {
+      errorContent = `${error.name}: ${error.message}`;
+    } else if (error) {
+      errorContent = JSON.stringify(error, null, 2);
+    }
+  } catch {
+    // If JSON.stringify fails, use a simple message
+    errorContent = "Error cannot be displayed";
+  }
+
   return _templateHtml(/*html*/ `
-    <h1>Error</h1>,
-    <pre>{JSON.stringify(error, null, 2)}</pre>`);
+    <div class="fallback-error">
+      <h1>Error</h1>
+      <pre>${errorContent}</pre>
+    </div>`);
 }

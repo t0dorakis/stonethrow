@@ -1,4 +1,4 @@
-import type { PageEvent } from "../../lib/types";
+import type { PageEvent } from "stone-throw/types";
 import NavBar from "../components/NavBar";
 /**
  * Custom 404 page that can be freely customized

@@ -10,10 +10,9 @@
     "start": "vinxi start"
   },
   "dependencies": {
+    "stone-throw": "workspace:*",
+    "vite-plugin-stone-auto-registry": "workspace:*",
     "@tailwindcss/vite": "^4.1.6",
-    "@vinxi/server-functions": "^0.5.1",
-    "consola": "^3.4.2",
-    "scule": "^1.3.0",
     "tailwindcss": "^4.1.6",
     "unhead": "^2.0.8",
     "vinxi": "^0.5.6"

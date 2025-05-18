@@ -1,14 +1,22 @@
-import type signal from "./sgnls";
-import type { H3Event, EventHandlerRequest } from "h3";
+import type { SignalType } from "./sgnls";
 
-export type PageEvent = H3Event<EventHandlerRequest>;
+// TODO: import this from vinxi / H3, somehow the build is failing
+export interface PageEvent {
+  node: {
+    req: any;
+    res: {
+      statusCode: number;
+    };
+  };
+  context: Record<string, any>;
+  path: string;
+}
 export type PageComponent = (event: PageEvent) => string;
 
-export type SignalType<T> = ReturnType<typeof signal<T>>;
 export interface ComponentWithInternalProps {
   (props?: Props, children?: unknown): string;
   module: () => void;
-  state: Record<string, ReturnType<typeof signal>>;
+  state: Record<string, SignalType<unknown>>;
   _$$name?: string;
   componentName?: string;
   ssr: (props?: Props, children?: unknown) => string;
@@ -17,7 +25,7 @@ export interface ComponentWithInternalProps {
 export type Props = Record<string, unknown>;
 export type ElementHandler = (
   element: HTMLElement,
-  state: Record<string, ReturnType<typeof signal>>
+  state: Record<string, SignalType<unknown>>
 ) => void;
 export type StateFactory = () => Record<string, unknown>;
 export type ComponentOptions = {
@@ -35,7 +43,7 @@ export type ComponentOptions = {
    * @returns The HTML string of the component
    */
   render: (
-    state: Record<string, ReturnType<typeof signal>>,
+    state: Record<string, SignalType<unknown>>,
     props?: Props,
     children?: string
   ) => string;

@@ -1,4 +1,4 @@
-import { create } from "../../lib/Stone";
+import { create } from "stone-throw/components";
 
 // Minimal counter component - name will be derived from variable name (MiniCounter -> mini-counter)
 const MiniCounter = create("mini-counter", {

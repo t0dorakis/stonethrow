@@ -16,7 +16,18 @@ alwaysApply: false
 - **Registration**:
 
   - Components auto-register on SSR render.
-  - Custom elements are defined once; `Stone.init(someRegistry)` registers all on the client.
+  - Custom elements are defined once; A function registers all on the client.
+
+  ```ts
+  // client.ts
+
+  // generated file by our vite plugin
+  import { stoneComponentRegistry } from "./stone.generated";
+
+  // on dom init
+  // this function compares the import file with a list of component names that were set in SSR context on a Page.ts level (window.__STONE__)
+  initializeCustomElements(stoneComponentRegistry);
+  ```
 
 - **Routing**:
   - Folder-based routing: URL paths map to Page.ts files in app/pages/.
@@ -27,7 +38,6 @@ alwaysApply: false
 - `app/client.ts`: Client entry point
 - `app/pages-router.ts`: Server entry point
 - `app.config.json`: defines the entry points (vinxi)
-- `lib/Stone.ts`: Main export file with public API
 - `lib/componentDefinition.ts`: Contains the core component creation logic
 - `lib/pageRenderer.ts`: Combines the Head (unhead) with the content and links the clientAssets
 - `lib/registryUtils.ts`: Handles component registration with the browser
@@ -63,3 +73,7 @@ alwaysApply: false
   1. A router config in app.config.js that points to a handler
   2. A page loader utility that maps URL paths to page files
   3. A convention of putting Page.ts at each path level
+
+```
+
+```
