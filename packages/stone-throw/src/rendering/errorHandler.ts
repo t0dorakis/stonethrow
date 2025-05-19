@@ -1,62 +1,48 @@
 import type { PageEvent } from "../types";
 import { logger } from "../utils/logging";
-import { renderErrorWithComponent, fallbackErrorPage } from "./pageRenderer";
+import { renderPage, templateHtml } from "./pageRenderer";
+import type { RouteModule } from "../routing/types";
+import routes from "vinxi/routes";
 
 /**
- * Creates a flexible error handler that can use custom error pages
- */
-export async function loadErrorPage(
-  statusCode: number,
-  importFunction?: (code: number) => Promise<any>
-): Promise<((event: PageEvent) => string) | null> {
-  try {
-    // If an import function is provided, use it to try to dynamically import the error page
-    if (importFunction) {
-      try {
-        const module = await importFunction(statusCode);
-        return module.default;
-      } catch (e) {
-        logger.info(
-          `No custom ${statusCode} page found, will use default error page`
-        );
-        return null;
-      }
-    }
-
-    // No import function provided, return null
-    return null;
-  } catch (error) {
-    logger.warn(`Failed to load error page for status ${statusCode}:`, error);
-    return null;
-  }
-}
-
-/**
- * Handle errors by showing appropriate error pages
- * Tries to use custom error pages when available
- *
- * @param event The page event
- * @param statusCode HTTP status code
- * @param error Optional error object
- * @param importFunction Optional function to import custom error pages
- * @returns Rendered HTML string
+ * Handle an error by rendering an error page or using a fallback handler.
+ * @param event - The page event object.
+ * @param statusCode - The HTTP status code to set on the response.
+ * @param error - The error object to render.
+ * @param fallbackHandler - A fallback handler to use if no error page is found.
  */
 export async function handleError(
   event: PageEvent,
-  statusCode: number,
-  error?: unknown,
-  importFunction?: (code: number) => Promise<any>
-) {
+  statusCode = 500,
+  error?: Error
+): Promise<string> {
+  // Set the status code on the event response
   event.node.res.statusCode = statusCode;
 
+  // Find error page based on status code
+  const errorRoute = routes.find((r) => r.path === `/${statusCode}`) as
+    | RouteModule
+    | undefined;
+
   try {
-    // Try to load a custom error page for this status code
-    const errorPage = await loadErrorPage(statusCode, importFunction);
-    // If we have a custom error page, use it
-    return await renderErrorWithComponent(event, errorPage, statusCode);
+    // If we have a matching error page route, use it
+    if (errorRoute?.$error?.import) {
+      const errorModule = await errorRoute.$error.import();
+      return await renderPage(errorModule.default, event);
+    }
+
+    // Last resort: simple error message
+    return fallbackErrorPage(statusCode);
   } catch (fallbackError) {
-    // If even our error handling fails, return the simplest possible error page
-    logger.error("Error in error handler:", fallbackError);
-    return fallbackErrorPage(error);
+    logger.error("Error while rendering error page:", fallbackError);
+    return fallbackErrorPage(statusCode);
   }
 }
+
+const fallbackErrorPage = (statusCode: number) =>
+  templateHtml(/*html*/ `
+    <body>
+      <h1> ${statusCode}</h1>
+      <p>Something went wrong</p>
+    </body>
+  `);

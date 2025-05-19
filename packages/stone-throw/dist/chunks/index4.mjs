@@ -6,6 +6,10 @@ class PagesRouter extends BaseFileSystemRouter {
     this.options = options;
   }
   toPath(filePath) {
+    const errorPageMatch = filePath.match(/\/(\d{3})\.(tsx|jsx|js|ts)$/);
+    if (errorPageMatch) {
+      return `/${errorPageMatch[1]}`;
+    }
     let path = filePath.replace(/\.(tsx|jsx|js|ts)$/, "");
     const pagesDir = this.options.dir;
     if (path.startsWith(pagesDir)) {
@@ -21,6 +25,20 @@ class PagesRouter extends BaseFileSystemRouter {
     return path === "/Page" ? "/" : path;
   }
   toRoute(filePath) {
+    const errorPageMatch = filePath.match(/\/(\d{3})\.(tsx|jsx|js|ts)$/);
+    if (errorPageMatch) {
+      const statusCode = Number.parseInt(errorPageMatch[1], 10);
+      if (statusCode >= 400 && statusCode < 500 || statusCode >= 500 && statusCode < 600) {
+        return {
+          path: this.toPath(filePath),
+          $error: {
+            src: filePath,
+            pick: ["default"],
+            statusCode
+          }
+        };
+      }
+    }
     return {
       path: this.toPath(filePath),
       $page: {

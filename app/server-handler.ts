@@ -4,41 +4,11 @@ import { eventHandler } from "vinxi/http";
 import routes from "vinxi/routes";
 // Use package imports
 import { logger } from "stone-throw/utils";
-import { renderPage, handleError } from "stone-throw/rendering";
+import { renderPage } from "stone-throw/rendering";
 import type { PageEvent, PageComponent } from "stone-throw/types";
-import type { Meta } from "stone-throw/utils";
-
+import type { RouteModule } from "stone-throw/routing/types";
+import { handleError } from "stone-throw/rendering";
 const log = logger.withTag("pages-router");
-
-// Add this type
-type PageComponentWithMeta = PageComponent & { Meta?: Meta };
-
-// Define a type for the route structure based on Vinxi's routes
-interface RouteModule {
-  path: string;
-  $page?: {
-    import: () => Promise<{
-      default: PageComponentWithMeta;
-      Meta?: Meta;
-    }>;
-  };
-}
-
-// Function to import error pages
-const importErrorPage = async (statusCode: number) => {
-  try {
-    if (statusCode === 404) {
-      return import("./pages/404");
-    }
-    if (statusCode === 500) {
-      return import("./pages/500");
-    }
-    return null;
-  } catch (e) {
-    console.error(`Error importing ${statusCode} page:`, e);
-    return null;
-  }
-};
 
 export default eventHandler({
   handler: async (event: PageEvent) => {
@@ -53,7 +23,7 @@ export default eventHandler({
       // Handle missing routes with 404
       if (!matchedRoute || !matchedRoute.$page?.import) {
         logger.warn(`No valid route found for path: ${event.path}`);
-        return handleError(event, 404, undefined, importErrorPage);
+        return handleError(event, 404, undefined);
       }
 
       // Import the full module including named exports
@@ -63,7 +33,7 @@ export default eventHandler({
         logger.error(
           `Component default export not found for path: ${event.path}`
         );
-        return handleError(event, 404, undefined, importErrorPage);
+        return handleError(event, 404, undefined);
       }
 
       // Attach Meta to the default export function
@@ -74,7 +44,7 @@ export default eventHandler({
       return await renderPage(PageComponent, event);
     } catch (error) {
       logger.error("Fatal router error:", error);
-      return handleError(event, 500, error, importErrorPage);
+      return handleError(event, 500, error);
     }
   },
 });

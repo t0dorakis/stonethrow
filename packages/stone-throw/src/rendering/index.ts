@@ -1,9 +1,5 @@
 // Export rendering-related functionality
-export {
-  renderPage,
-  renderErrorWithComponent,
-  fallbackErrorPage,
-} from "./pageRenderer";
-export { handleError, loadErrorPage } from "./errorHandler";
+export { renderPage } from "./pageRenderer";
+export { handleError } from "./errorHandler";
 export type { PageComponent } from "../types";
-export type { Meta } from "../head/setMeta";
+export type { Meta } from "../head/types";

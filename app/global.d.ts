@@ -1,4 +1,4 @@
-import { createHead } from "unhead/client";
+import type { createHead } from "unhead/client";
 
 declare global {
   interface Window {
@@ -9,4 +9,5 @@ declare global {
   }
 }
 
+// biome-ignore lint/complexity/noUselessEmptyExport: something is wrong with the type inference here
 export {};

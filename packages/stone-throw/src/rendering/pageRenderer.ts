@@ -3,7 +3,8 @@ import type { PageEvent } from "../types";
 import { loadClientAssets } from "../core/clientAssets";
 import { logger } from "../utils/logging";
 import { createHead, transformHtmlTemplate } from "unhead/server";
-import { type Meta } from "../head/setMeta";
+import type { Meta } from "../head/types";
+import { handleError } from "./errorHandler";
 /**
  * Render the document head with meta tags, title, and client assets
  * @param clientAssets Array of client assets to include in head
@@ -90,7 +91,7 @@ function renderFrameworkScript() {
  *
  * @param parts Takes a list of strings and and combines them to the HTML Page with a head
  */
-const _templateHtml = (...parts: string[]) => {
+export const templateHtml = (...parts: string[]) => {
   return /*html*/ `
     <!DOCTYPE html>
     <html>
@@ -130,66 +131,11 @@ export async function renderPage(
     const head = await getHead(metaValue);
     const page = PageComponent(event);
 
-    const template = _templateHtml(page, renderFrameworkScript());
+    const template = templateHtml(page, renderFrameworkScript());
 
     return await transformHtmlTemplate(head, template);
   } catch (error) {
     logger.error("Error in renderPage:", error);
-    return fallbackErrorPage(error);
+    return handleError(event, 500, error as Error);
   }
-}
-
-/**
- * Render a page with a custom error component
- * @param event The page event
- * @param ErrorComponent The error component to render, or null to use default error
- * @param statusCode HTTP status code (defaults to 404)
- * @returns Rendered HTML string
- */
-export async function renderErrorWithComponent(
-  event: PageEvent,
-  ErrorComponent: ((event: PageEvent) => string) | null,
-  statusCode = 404
-) {
-  try {
-    // Set status code on the response
-    event.node.res.statusCode = statusCode;
-
-    const head = await getHead({
-      title: `Error ${statusCode}`,
-    });
-
-    if (!ErrorComponent) throw new Error("ErrorComponent is required");
-    const template = _templateHtml(ErrorComponent(event));
-
-    return transformHtmlTemplate(head, template);
-  } catch (error) {
-    logger.error("Failed to render custom error page:", error);
-    // Fall back to basic error page
-    return fallbackErrorPage(error);
-  }
-}
-
-/**
- * Render a simple fallback error page when custom error pages fail
- */
-export function fallbackErrorPage(error: unknown): string {
-  let errorContent = "Unknown error";
-
-  try {
-    if (error instanceof Error) {
-      errorContent = `${error.name}: ${error.message}`;
-    } else if (error) {
-      errorContent = JSON.stringify(error, null, 2);
-    }
-  } catch {
-    // If JSON.stringify fails, use a simple message
-    errorContent = "Error cannot be displayed";
-  }
-
-  return _templateHtml(/*html*/ `
-    <div class="fallback-error">
-      <h1>Error</h1>
-      <pre>${errorContent}</pre>
-    </div>`);
 }

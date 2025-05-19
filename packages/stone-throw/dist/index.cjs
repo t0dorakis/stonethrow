@@ -12,6 +12,7 @@ require('./chunks/logging.cjs');
 require('consola');
 require('vinxi/manifest');
 require('unhead/server');
+require('vinxi/routes');
 require('vinxi/fs-router');
 
 

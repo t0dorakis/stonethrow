@@ -1,6 +1,6 @@
 import type { Plugin, ViteDevServer } from "vite";
-import { promises as fs } from "fs";
-import { join, relative, resolve, sep, posix, dirname } from "path";
+import { promises as fs } from "node:fs";
+import { join, relative, resolve, sep, posix, dirname } from "node:path";
 import { kebabCase } from "scule";
 
 interface StoneAutoRegistryOptions {
@@ -67,7 +67,7 @@ export const stoneComponentRegistry = {} as const;
       relPath = toPosixPath(relPath);
       // Remove .ts or .tsx extension for Vite import
       relPath = relPath.replace(/\.[tj]sx?$/, "");
-      if (!relPath.startsWith(".")) relPath = "./" + relPath;
+      if (!relPath.startsWith(".")) relPath = `./${relPath}`;
 
       return `  "${name}": () => import("${relPath}")`;
     })

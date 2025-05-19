@@ -41,7 +41,7 @@ export const stoneComponentRegistry = {} as const;
       let relPath = relative(outputDir, join(absDir, file));
       relPath = toPosixPath(relPath);
       relPath = relPath.replace(/\.[tj]sx?$/, "");
-      if (!relPath.startsWith(".")) relPath = "./" + relPath;
+      if (!relPath.startsWith(".")) relPath = `./${relPath}`;
       return `  "${name}": () => import("${relPath}")`;
     })
   );

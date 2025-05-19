@@ -1,7 +1,4 @@
-export type Meta = {
-  title?: string;
-  metaTags?: Array<Record<string, string>>;
-};
+import type { Meta } from "./types";
 /**
  * Simple helper to set the meta tags for the page
  * @param meta The meta tags to set

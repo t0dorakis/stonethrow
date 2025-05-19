@@ -74,7 +74,7 @@ export function createComponent(
     : options.name || "s-component";
 
   // Validate the element name (custom elements must contain a hyphen)
-  let name = validateElementName(initialName);
+  const name = validateElementName(initialName);
 
   // Create a global state instance for SSR
   const initialState =

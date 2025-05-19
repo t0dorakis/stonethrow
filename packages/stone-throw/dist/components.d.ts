@@ -1,3 +1,2 @@
-export { a as create, c as createComponent, b as initializeCustomElements } from './index-b2795ce7.js';
-export { C as ComponentOptions, c as ComponentWithInternalProps, b as Props } from './types-1662f0c4.js';
-import './sgnls-47f5a9f4.js';
+export { C as ComponentOptions, d as ComponentWithInternalProps, P as Props, a as create, c as createComponent, b as initializeCustomElements } from './index-8b1972f2.js';
+import './sgnls-45f728a5.js';

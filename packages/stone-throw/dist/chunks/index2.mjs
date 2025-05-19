@@ -2,6 +2,7 @@ import { g as getComponentsToRegister } from './registryUtils.mjs';
 import { getManifest } from 'vinxi/manifest';
 import { l as logger } from './logging.mjs';
 import { transformHtmlTemplate, createHead } from 'unhead/server';
+import routes from 'vinxi/routes';
 
 async function loadClientAssets() {
   try {
@@ -25,6 +26,27 @@ async function loadClientAssets() {
     };
   }
 }
+
+async function handleError(event, statusCode = 500, error) {
+  event.node.res.statusCode = statusCode;
+  const errorRoute = routes.find((r) => r.path === `/${statusCode}`);
+  try {
+    if (errorRoute?.$error?.import) {
+      const errorModule = await errorRoute.$error.import();
+      return await renderPage(errorModule.default, event);
+    }
+    return fallbackErrorPage(statusCode);
+  } catch (fallbackError) {
+    logger.error("Error while rendering error page:", fallbackError);
+    return fallbackErrorPage(statusCode);
+  }
+}
+const fallbackErrorPage = (statusCode) => templateHtml(`
+    <body>
+      <h1> ${statusCode}</h1>
+      <p>Something went wrong</p>
+    </body>
+  `);
 
 async function getHead(metaSate) {
   const { clientAssets, clientEntry } = await loadClientAssets();
@@ -84,7 +106,7 @@ function renderFrameworkScript() {
     <\/script>
   `;
 }
-const _templateHtml = (...parts) => {
+const templateHtml = (...parts) => {
   return `
     <!DOCTYPE html>
     <html>
@@ -108,83 +130,18 @@ async function renderPage(PageComponent, event) {
     }
     const head = await getHead(metaValue);
     const page = PageComponent(event);
-    const template = _templateHtml(page, renderFrameworkScript());
+    const template = templateHtml(page, renderFrameworkScript());
     return await transformHtmlTemplate(head, template);
   } catch (error) {
     logger.error("Error in renderPage:", error);
-    return fallbackErrorPage(error);
-  }
-}
-async function renderErrorWithComponent(event, ErrorComponent, statusCode = 404) {
-  try {
-    event.node.res.statusCode = statusCode;
-    const head = await getHead({
-      title: `Error ${statusCode}`
-    });
-    if (!ErrorComponent)
-      throw new Error("ErrorComponent is required");
-    const template = _templateHtml(ErrorComponent(event));
-    return transformHtmlTemplate(head, template);
-  } catch (error) {
-    logger.error("Failed to render custom error page:", error);
-    return fallbackErrorPage(error);
-  }
-}
-function fallbackErrorPage(error) {
-  let errorContent = "Unknown error";
-  try {
-    if (error instanceof Error) {
-      errorContent = `${error.name}: ${error.message}`;
-    } else if (error) {
-      errorContent = JSON.stringify(error, null, 2);
-    }
-  } catch {
-    errorContent = "Error cannot be displayed";
-  }
-  return _templateHtml(`
-    <div class="fallback-error">
-      <h1>Error</h1>
-      <pre>${errorContent}</pre>
-    </div>`);
-}
-
-async function loadErrorPage(statusCode, importFunction) {
-  try {
-    if (importFunction) {
-      try {
-        const module = await importFunction(statusCode);
-        return module.default;
-      } catch (e) {
-        logger.info(
-          `No custom ${statusCode} page found, will use default error page`
-        );
-        return null;
-      }
-    }
-    return null;
-  } catch (error) {
-    logger.warn(`Failed to load error page for status ${statusCode}:`, error);
-    return null;
-  }
-}
-async function handleError(event, statusCode, error, importFunction) {
-  event.node.res.statusCode = statusCode;
-  try {
-    const errorPage = await loadErrorPage(statusCode, importFunction);
-    return await renderErrorWithComponent(event, errorPage, statusCode);
-  } catch (fallbackError) {
-    logger.error("Error in error handler:", fallbackError);
-    return fallbackErrorPage(error);
+    return handleError(event, 500);
   }
 }
 
 const index = {
   __proto__: null,
   renderPage: renderPage,
-  renderErrorWithComponent: renderErrorWithComponent,
-  fallbackErrorPage: fallbackErrorPage,
-  handleError: handleError,
-  loadErrorPage: loadErrorPage
+  handleError: handleError
 };
 
-export { renderErrorWithComponent as a, fallbackErrorPage as f, handleError as h, index as i, loadErrorPage as l, renderPage as r };
+export { handleError as h, index as i, renderPage as r };

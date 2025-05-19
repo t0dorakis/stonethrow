@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach } from "vitest";
-import { promises as fs } from "fs";
-import { join } from "path";
+import { promises as fs } from "node:fs";
+import { join } from "node:path";
 import stoneAutoRegistry from "./index";
 import { mkdirp } from "mkdirp";
 import { rimraf } from "rimraf";
@@ -27,7 +27,7 @@ describe("stoneAutoRegistry Vite plugin", () => {
     });
 
     // Access the buildStart hook handler
-    const buildStartHook = (plugin as Plugin).buildStart as Function;
+    const buildStartHook = (plugin as Plugin).buildStart as () => Promise<void>;
     await buildStartHook();
 
     const output = await fs.readFile(OUTPUT_FILE, "utf-8");
@@ -48,7 +48,7 @@ describe("stoneAutoRegistry Vite plugin", () => {
       output: OUTPUT_FILE,
     });
 
-    const buildStartHook = (plugin as Plugin).buildStart as Function;
+    const buildStartHook = (plugin as Plugin).buildStart as () => Promise<void>;
     await buildStartHook();
 
     const output = await fs.readFile(OUTPUT_FILE, "utf-8");
@@ -66,7 +66,7 @@ describe("stoneAutoRegistry Vite plugin", () => {
       output: OUTPUT_FILE,
     });
 
-    const buildStartHook = (plugin as Plugin).buildStart as Function;
+    const buildStartHook = (plugin as Plugin).buildStart as () => Promise<void>;
     await buildStartHook();
 
     const output = await fs.readFile(OUTPUT_FILE, "utf-8");
@@ -94,7 +94,8 @@ describe("stoneAutoRegistry Vite plugin", () => {
     }
 
     // Access the configResolved hook handler
-    const configResolvedHook = (plugin as any).configResolved as Function;
+    const configResolvedHook = (plugin as Plugin)
+      .configResolved as () => Promise<void>;
 
     // Execute the hook
     if (configResolvedHook) {
@@ -125,7 +126,7 @@ describe("stoneAutoRegistry Vite plugin", () => {
     });
 
     // Access the buildStart hook handler
-    const buildStartHook = (plugin as Plugin).buildStart as Function;
+    const buildStartHook = (plugin as Plugin).buildStart as () => Promise<void>;
     await buildStartHook();
 
     // Verify a minimal empty registry was created

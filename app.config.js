@@ -49,7 +49,7 @@ export default createApp({
       name: "pages",
       type: "http",
       target: "server",
-      handler: "./app/pages-router.ts",
+      handler: "./app/server-handler.ts",
       plugins: () => [tailwindcss()],
       // https://vinxi.vercel.app/guide/file-system-routing.html
       routes: (router, app) => {

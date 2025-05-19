@@ -14,7 +14,7 @@ async function initializeCustomElements(stoneComponentRegistry) {
       const loader = stoneComponentRegistry[name];
       if (loader) {
         const mod = await loader();
-        if (mod.default && mod.default.module) {
+        if (mod.default?.module) {
           mod.default.module();
         }
       } else {

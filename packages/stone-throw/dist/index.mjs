@@ -8,4 +8,5 @@ import './chunks/logging.mjs';
 import 'consola';
 import 'vinxi/manifest';
 import 'unhead/server';
+import 'vinxi/routes';
 import 'vinxi/fs-router';

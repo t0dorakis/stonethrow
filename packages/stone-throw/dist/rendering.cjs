@@ -8,11 +8,9 @@ require('./chunks/logging.cjs');
 require('consola');
 require('vinxi/manifest');
 require('unhead/server');
+require('vinxi/routes');
 
 
 
-exports.fallbackErrorPage = rendering.fallbackErrorPage;
 exports.handleError = rendering.handleError;
-exports.loadErrorPage = rendering.loadErrorPage;
-exports.renderErrorWithComponent = rendering.renderErrorWithComponent;
 exports.renderPage = rendering.renderPage;

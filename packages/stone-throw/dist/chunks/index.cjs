@@ -31,7 +31,7 @@ function createComponent(nameOrOptions, optionsParam) {
   const isStringName = typeof nameOrOptions === "string";
   const options = isStringName && optionsParam ? optionsParam : nameOrOptions;
   const initialName = isStringName ? nameOrOptions : options.name || "s-component";
-  let name = validateElementName(initialName);
+  const name = validateElementName(initialName);
   const initialState = typeof options.state === "function" ? options.state() : options.state || {};
   const globalStateSignals = Object.fromEntries(
     Object.entries(initialState).map(([key, value]) => [key, sgnls.signal(value)])
