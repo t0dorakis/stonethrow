@@ -1,8 +1,13 @@
-import { createHead } from "unhead/client";
+import type { createHead } from "unhead/client";
 
-interface Window {
-  __UNHEAD__?: ReturnType<typeof createHead>;
-  __STONE__?: {
-    componentsToRegister?: string[];
-  };
+declare global {
+  interface Window {
+    __UNHEAD__?: ReturnType<typeof createHead>;
+    __STONE__?: {
+      componentsToRegister?: string[];
+    };
+  }
 }
+
+// biome-ignore lint/complexity/noUselessEmptyExport: something is wrong with the type inference here
+export {};

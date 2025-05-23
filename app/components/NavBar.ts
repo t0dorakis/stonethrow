@@ -1,4 +1,4 @@
-import { create } from "../../lib/Stone";
+import { create } from "stone-throw/components";
 
 const navItems = [{ label: "Blog", href: "/blog" }] as const;
 

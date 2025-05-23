@@ -1,4 +1,4 @@
-import { create } from "../../lib/Stone";
+import { create } from "stone-throw/components";
 
 // Card component that can receive and render children
 // Name will be derived from variable name (Card -> s-card)

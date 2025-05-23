@@ -7,3 +7,10 @@ node_modules
 
 .vscode/settings.json
 _proto-scripts/
+
+# ignore all generated files
+*.generated.ts
+
+# ignore workspace dist files
+/packages/stone-throw/dist/
+/packages/vite-plugin-stone-auto-registry/dist/

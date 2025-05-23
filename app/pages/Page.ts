@@ -1,7 +1,7 @@
 import Card from "../components/Card";
 import MiniCounter from "../components/MiniCounter";
 import NavBar from "../components/NavBar";
-import { setMeta } from "../../lib/setMeta";
+import { setMeta } from "stone-throw/utils";
 
 const HomePage = () => {
   return /*html*/ `
