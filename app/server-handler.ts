@@ -2,11 +2,9 @@
 
 import { eventHandler } from "vinxi/http";
 import routes from "vinxi/routes";
-// Use package imports
 import { logger } from "stone-throw/utils";
 import { renderPage } from "stone-throw/rendering";
-import type { PageEvent, PageComponent } from "stone-throw/types";
-import type { RouteModule } from "stone-throw/routing/types";
+import type { PageEvent, RouteModule } from "stone-throw/routing";
 import { handleError } from "stone-throw/rendering";
 const log = logger.withTag("pages-router");
 
