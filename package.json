@@ -7,18 +7,23 @@
   "scripts": {
     "dev": "vinxi dev",
     "build": "vinxi build",
+    "optimize-images": "node scripts/optimize-images.mjs",
     "start": "vinxi start",
     "build:all": "npm run build --workspaces"
   },
   "dependencies": {
-    "stone-throw": "workspace:*",
-    "vite-plugin-stone-auto-registry": "workspace:*",
     "@tailwindcss/vite": "^4.1.6",
+    "sharp": "^0.34.2",
+    "stone-throw": "workspace:*",
     "tailwindcss": "^4.1.6",
     "unhead": "^2.0.8",
-    "vinxi": "^0.5.6"
+    "vinxi": "^0.5.6",
+    "vite-plugin-stone-auto-registry": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "^22.11.5",
+    "typescript": "^5.7.3",
+    "vite-plugin-stone-auto-registry": "^0.1.4"
   }
 }
