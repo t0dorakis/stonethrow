@@ -21,6 +21,11 @@ const stoneRegistryConfig = {
 
 export default createApp({
   ...getPreset(),
+  server: {
+    esbuild: {
+      target: "esnext",
+    },
+  },
   routers: [
     {
       name: "public",
