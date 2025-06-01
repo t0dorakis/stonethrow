@@ -1,0 +1,16 @@
+// app/pages/about/Page.ts
+import Card from "../../components/Card";
+import Counter from "../../components/Counter";
+
+const Page = () => {
+	return /*html*/ `
+    <body>
+      <div class="container">
+        <h1>About Stone Throw</h1>
+        ${Card({ title: "Welcome" }, Counter({ title: "Demo Counter" }))}
+      </div>
+    </body>
+  `;
+};
+
+export default Page;
