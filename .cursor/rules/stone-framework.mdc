@@ -3,6 +3,8 @@ description: Stone Throw Framework Development Guidelines
 globs: *.ts *.tsx *.js *.json *.md *.mdc
 alwaysApply: false
 ---
+# Stone Throw Framework Development Guidelines
+
 # Framework Positioning & Inspiration
 
 - **Philosophy**: SSR-first, progressive enhancement, inspired by Enhance but leverages modern UnJS tools
@@ -23,6 +25,7 @@ alwaysApply: false
 
   // generated file by our vite plugin
   import { stoneComponentRegistry } from "./stone.generated";
+  import { initializeCustomElements } from "stone-throw/client";
 
   // on dom init
   // this function compares the import file with a list of component names that were set in SSR context on a Page.ts level (window.__STONE__)
@@ -33,28 +36,50 @@ alwaysApply: false
   - Folder-based routing: URL paths map to Page.ts files in app/pages/.
   - Vinxi router (`app.config.js`) and page loader utilities handle mapping.
 
+## Component Creation
+
+- Components are created using the `create` function from "stone-throw/components"
+- Import pattern: `import { create } from "stone-throw/components"`
+
+```ts
+import { create } from "stone-throw/components";
+
+const MyComponent = create("my-component", {
+  state: () => ({ count: 0 }),
+  render: (state, props, children) => `<div>${state.count.get()}</div>`,
+  init: (element, state) => {
+    // Client-side enhancement
+  }
+});
+```
+
 ## Important Files
 
 - `app/client.ts`: Client entry point
-- `app/pages-router.ts`: Server entry point
+- `app/pages-router.ts`: Server entry point  
 - `app.config.json`: defines the entry points (vinxi)
-- `lib/componentDefinition.ts`: Contains the core component creation logic
-- `lib/pageRenderer.ts`: Combines the Head (unhead) with the content and links the clientAssets
-- `lib/registryUtils.ts`: Handles component registration with the browser
-- `lib/sgnls.ts`: Implements the reactive state system
-- `lib/types.ts`: TypeScript definitions for the framework
+
+## Package Imports
+
+All Stone Throw functionality is imported from the "stone-throw" package:
+
+- `import { create } from "stone-throw/components"` - Component creation
+- `import { initializeCustomElements } from "stone-throw/client"` - Client registration
+- Core framework logic is encapsulated in the node module
 
 ## State Management
 
 - Component state is managed via signals
 - Each component instance gets its own state copy
 - Global state is preserved for SSR contexts
+- State is reactive and automatically triggers re-renders
 
 ## Server-Side Rendering
 
 - Components are automatically registered when rendered server-side
 - Always wrap component content with the appropriate tag
-- Use the `ssr` method for explicit server rendering needs
+- Page handlers can be async for server-side data fetching
+- Use async page handlers for operations like code highlighting with Shiki
 
 ## Component Registration
 
@@ -69,6 +94,7 @@ alwaysApply: false
   - `/` → `app/pages/Page.ts`
   - `/about` → `app/pages/about/Page.ts`
   - `/blog/post` → `app/pages/blog/post/Page.ts`
+- Page handlers can be async for server-side operations
 - Implemented via:
   1. A router config in app.config.js that points to a handler
   2. A page loader utility that maps URL paths to page files

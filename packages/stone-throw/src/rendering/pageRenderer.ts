@@ -129,7 +129,7 @@ export async function renderPage(
     }
 
     const head = await getHead(metaValue);
-    const page = PageComponent(event);
+    const page = await PageComponent(event);
 
     const template = templateHtml(page, renderFrameworkScript());
 
