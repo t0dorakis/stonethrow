@@ -12,13 +12,13 @@
     "build:all": "npm run build --workspaces"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.6",
+    "@tailwindcss/vite": "^4.1.8",
     "gsap": "^3.13.0",
     "sharp": "^0.34.2",
     "shiki": "^3.4.2",
     "stone-throw": "workspace:*",
     "tailwindcss": "^4.1.6",
-    "unhead": "^2.0.8",
+    "unhead": "^2.0.10",
     "vinxi": "^0.5.6",
     "vite-plugin-stone-auto-registry": "workspace:*"
   },
