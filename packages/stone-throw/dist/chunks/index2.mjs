@@ -129,7 +129,7 @@ async function renderPage(PageComponent, event) {
       }
     }
     const head = await getHead(metaValue);
-    const page = PageComponent(event);
+    const page = await PageComponent(event);
     const template = templateHtml(page, renderFrameworkScript());
     return await transformHtmlTemplate(head, template);
   } catch (error) {

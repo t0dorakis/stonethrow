@@ -1,0 +1,21 @@
+const MyComponent = create("my-component", {
+	state: () => ({
+		isActive: false,
+		message: "Hello World",
+	}),
+
+	render: (state, props, children) => `
+    <div class="component ${state.isActive.get() ? "active" : ""}">
+      <h2>${props?.title || "Default Title"}</h2>
+      <p>${state.message.get()}</p>
+      ${children || ""}
+    </div>
+  `,
+
+	init: (element, state) => {
+		// Client-side initialization
+		element.addEventListener("click", () => {
+			state.isActive.update((active) => !active);
+		});
+	},
+});

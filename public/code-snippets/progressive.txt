@@ -1,0 +1,22 @@
+// Works without JavaScript
+const Form = create("enhanced-form", {
+	render: (state, props) => `
+    <form action="/submit" method="POST">
+      <input type="text" name="message" required>
+      <button type="submit">Send</button>
+    </form>
+  `,
+
+	// Enhanced with JavaScript
+	init: (element, state) => {
+		element.addEventListener("submit", async (e) => {
+			e.preventDefault();
+			// Handle with fetch for better UX
+			const formData = new FormData(e.target);
+			await fetch("/submit", {
+				method: "POST",
+				body: formData,
+			});
+		});
+	},
+});

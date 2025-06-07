@@ -1,1 +1,24 @@
 @import "tailwindcss";
+
+/* DESIGN SYSTEM */
+
+/* use helvetics fron the system */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+::selection {
+  background-color: var(--color-primary-200);
+  color: var(--color-copy);
+}
+
+@theme {
+  --color-primary-200: #c5b9cc;
+  --color-primary-500: #a154a9;
+  --color-primary-600: #803686;
+  --color-primary-700: #602564;
+  --color-primary-800: #401643;
+  --color-primary-900: #200821;
+  --color-surface: #e4e4e4;
+  --color-copy: #000000;
+}
