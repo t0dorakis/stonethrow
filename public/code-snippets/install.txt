@@ -1,3 +1,0 @@
-npm create stone-throw my-app
-cd my-app
-npm run dev 

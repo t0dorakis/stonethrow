@@ -1,8 +1,0 @@
-// Use in your pages
-export default () => /*html*/ `
-  <body>
-    ${Counter({ title: "My Counter" })}
-    
-    ${Card({ title: "With Children" }, Counter({ title: "Nested Counter" }))}
-  </body>
-`;

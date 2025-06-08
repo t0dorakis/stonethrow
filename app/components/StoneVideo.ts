@@ -9,7 +9,6 @@ const StoneVideo = create("stone-video", {
       muted 
       autoplay
       playsinline 
-      preload="auto"
       poster="${props.poster}"
     >
       <source src="${props.src}_vp9.webm" type="video/webm; codecs=vp9">

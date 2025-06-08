@@ -13,6 +13,7 @@ body {
 }
 
 @theme {
+  --color-primary-100: #f5f0f7;
   --color-primary-200: #c5b9cc;
   --color-primary-500: #a154a9;
   --color-primary-600: #803686;
@@ -21,4 +22,9 @@ body {
   --color-primary-900: #200821;
   --color-surface: #e4e4e4;
   --color-copy: #000000;
+}
+
+.shiki {
+  padding: 16px;
+  font-size: 12px;
 }

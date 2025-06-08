@@ -227,8 +227,6 @@ A lightweight web component framework focused on server-side rendering and progr
 
 Stone Throw includes a folder-based routing system powered by Vinxi:
 
-### How It Works
-
 Pages are automatically mapped from URL paths to folder structures:
 
 - `/` → `app/pages/Page.ts`

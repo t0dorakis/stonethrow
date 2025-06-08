@@ -1,0 +1,20 @@
+export const codeSnippets = {
+  counter: `const Counter = create("counter", {
+	// signal based state
+	state: () => ({ count: 0 }),
+	// server side
+	render: (state, props, children) => \`
+    <div class="counter">
+      <div>Count: \${state.count.get()}</div>
+      <button>+</button>
+    </div>
+  \`,
+	// client side
+	init: (element, state) => {
+		element.querySelector("button")?
+			.addEventListener("click", () => {
+				state.count.update((n) => n + 1)
+		})
+	},
+})`,
+};
