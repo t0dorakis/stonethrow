@@ -1,5 +1,4 @@
-import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { codeSnippets } from "./codeSnippets";
 
 import catppuccinMacchiato from "@shikijs/themes/catppuccin-macchiato";
 import { createHighlighterCore } from "shiki/core";
@@ -12,11 +11,13 @@ const highlighter = await createHighlighterCore({
 });
 
 const getCodeSnippets = async (name: string, lang = "typescript") => {
-  // /codeSnippets/components.ts
-  // const code = await fetch(`/code-snippets/${name}`).then((res) => res.text());
-  // Read file directly from filesystem instead of making HTTP request
-  const filePath = resolve(process.cwd(), "public/code-snippets", name);
-  const code = await readFile(filePath, "utf-8");
+  // Get code snippet from the constants
+  const code = codeSnippets[name as keyof typeof codeSnippets];
+
+  if (!code) {
+    throw new Error(`Code snippet not found: ${name}`);
+  }
+
   const html = await highlighter.codeToHtml(code, {
     lang: lang,
     theme: "catppuccin-macchiato",

@@ -3,6 +3,7 @@ import StoneVideo from "../components/StoneVideo";
 import { setMeta } from "stone-throw/utils";
 import getCodeSnippets from "../data/getCodeSnippets";
 import CodeBlock from "../components/CodeBlock";
+import Counter from "../components/Counter";
 
 const HomePage = async () => {
   const counterSnippet = await getCodeSnippets("counter");
@@ -31,9 +32,14 @@ const HomePage = async () => {
         </div>
       </section>
       <section class="flex flex-col md:flex-row h-full min-h-screen">
+      <div class="w-full md:w-1/2 bg-primary-200 flex items-center justify-center">
         ${CodeBlock({
           code: counterSnippet,
         })}
+        </div>
+          <div class="w-full md:w-1/2 bg-surface flex items-center justify-center">
+        ${Counter()}
+        </div>
       </section>
     </main>
   `;
