@@ -7,7 +7,7 @@ const Link = create("link", {
     const buttonVariant = props?.variant;
 
     return /*html*/ `
-      <a href="${href}" class="inline-flex justify-center items-center py-3 px-5 text-center text-copy rounded-lg bg-primary-200 hover:bg-primary-300 focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-900">
+      <a href="${href}" class="inline-flex justify-center items-center py-3 px-5 text-center text-copy rounded-lg bg-secondary-300 hover:bg-primary-300 focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-900">
           ${children}
           ${
             buttonVariant === "arrow" &&
