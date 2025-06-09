@@ -15,7 +15,7 @@
     "@tailwindcss/vite": "^4.1.8",
     "gsap": "^3.13.0",
     "sharp": "^0.34.2",
-    "shiki": "^3.4.2",
+    "shiki": "^3.6.0",
     "stone-throw": "workspace:*",
     "tailwindcss": "^4.1.6",
     "unhead": "^2.0.10",
