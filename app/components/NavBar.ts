@@ -1,17 +1,16 @@
 import { create } from "stone-throw/components";
+import Logo from "./Logo";
 
-const navItems = [{ label: "Blog", href: "/blog" }] as const;
+const navItems = [
+  { label: "Blog", href: "#" },
+  { label: "About", href: "#" },
+  { label: "Contact", href: "#" },
+] as const;
 
-const NavBar = create("nav-bar", {
-  render: (state, props, children) => {
-    return /*html*/ `
-      <section class="flexp-4 w-auto items-start mx-8 mt-4">
-        <nav class="flex items-center gap-4 w-auto border-1 border-stone-200 rounded-md px-4 py-3">
-          <div class="flex items-baseline  text-stone-900  gap-4 w-auto">
-            <div class="text-xl font-bold align-baseline">
-              <a href="/" class="text-stone-900 hover:-rotate-3 inline-block transition-transform duration-50">Stone</a>
-            </div>
-            <div class="flex items-end gap-3">
+const leftPill = /*html*/ `
+      <div class="flex flex-row bg-primary-500  px-4 py-3 rounded-[20px]">
+        ${Logo()}
+        <div class="flex items-center text-stone-900 ml-4 gap-3">
               ${navItems
                 .map(
                   (item) => /*html*/ `
@@ -19,10 +18,16 @@ const NavBar = create("nav-bar", {
               `
                 )
                 .join("")}
-            </div>
           </div>
+      </div>
+    `;
+
+const NavBar = create("nav-bar", {
+  render: (state, props, children) => {
+    return /*html*/ `
+        <nav class="flex items-center gap-4 w-auto rounded-md py-1">
+          ${leftPill}
         </nav>
-      </section>
     `;
   },
 });

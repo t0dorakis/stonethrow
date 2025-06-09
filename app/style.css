@@ -12,14 +12,25 @@ body {
   color: var(--color-copy);
 }
 
+@font-face {
+  font-family: Eiko;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/PPEiko-Black.woff2") format("woff2");
+}
+
 @theme {
+  --font-sans: "Helvetica Neue", "Helvetica", "Arial", "sans-serif";
+  --font-display: "Eiko", "serif";
   --color-primary-100: #f5f0f7;
   --color-primary-200: #c5b9cc;
-  --color-primary-500: #a154a9;
+  --color-primary-500: #bea5f6;
   --color-primary-600: #803686;
   --color-primary-700: #602564;
   --color-primary-800: #401643;
   --color-primary-900: #200821;
+  --color-secondary-300: #9dd395;
   --color-surface: #e4e4e4;
   --color-copy: #000000;
 }
