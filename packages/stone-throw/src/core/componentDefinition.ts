@@ -1,5 +1,7 @@
 import { markComponentForRegistration } from "./registryUtils";
 import { signal } from "../state/sgnls";
+import { createRerenderScope } from "../hooks/useRerender";
+import { deepClone } from "../utils/deepClone";
 import type {
   ComponentOptions,
   Props,
@@ -116,6 +118,7 @@ export function createComponent(
   Component.module = () => {
     class CustomElement extends HTMLElement {
       private stateSignals: Record<string, ReturnType<typeof signal>>;
+      private effectCleanups: Set<() => void>;
 
       constructor() {
         super();
@@ -124,7 +127,7 @@ export function createComponent(
           typeof options.state === "function"
             ? options.state()
             : options.state
-            ? JSON.parse(JSON.stringify(options.state)) // Deep clone to avoid sharing  TODO: use a better approach
+            ? deepClone(options.state)
             : {};
 
         this.stateSignals = Object.fromEntries(
@@ -133,15 +136,35 @@ export function createComponent(
             signal(value),
           ])
         );
+
+        this.effectCleanups = new Set();
       }
 
       connectedCallback() {
-        if (options.init) {
-          options.init(this, this.stateSignals);
-        }
+        // Create rerender scope with context
+        createRerenderScope(
+          {
+            currentElement: this,
+            renderFunction: options.render,
+            stateSignals: this.stateSignals,
+            effectCleanups: this.effectCleanups,
+          },
+          () => {
+            // Call user init function within rerender context
+            if (options.init) {
+              options.init(this, this.stateSignals);
+            }
+          }
+        );
       }
 
       disconnectedCallback() {
+        // Clean up all effects
+        for (const cleanup of this.effectCleanups) {
+          cleanup();
+        }
+        this.effectCleanups.clear();
+
         if (options.cleanup) {
           options.cleanup(this, this.stateSignals);
         }
