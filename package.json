@@ -23,7 +23,7 @@
     "vite-plugin-stone-auto-registry": "workspace:*"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.0.6",
     "@types/node": "^22.15.30",
     "typescript": "^5.7.3",
     "vite-plugin-stone-auto-registry": "^0.1.4"
