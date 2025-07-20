@@ -57,7 +57,9 @@ export function smartUpdateElement(
 
 		if (opts.debugMode) {
 			console.log(
-				`🧠 Smart Diff: Completed template-aware update in ${templateResult.performance.duration.toFixed(2)}ms with ${templateResult.changesCount} changes`,
+				`🧠 Smart Diff: Completed template-aware update in ${templateResult.performance.duration.toFixed(
+					2,
+				)}ms with ${templateResult.changesCount} changes`,
 			);
 		}
 
@@ -91,7 +93,11 @@ export function smartUpdateElement(
 
 	if (opts.debugMode) {
 		console.log(
-			`🧠 Smart Diff: Completed ${result.type} update in ${result.performance.duration.toFixed(2)}ms with ${result.changesCount} changes`,
+			`🧠 Smart Diff: Completed ${
+				result.type
+			} update in ${result.performance.duration.toFixed(2)}ms with ${
+				result.changesCount
+			} changes`,
 		);
 	}
 
@@ -99,7 +105,7 @@ export function smartUpdateElement(
 }
 
 /**
- * Template-aware update: Find elements with data-testid and update their content directly
+ * Template-aware update: Find elements with data-watch and update their content directly
  * This is the fastest path since we know exactly which elements contain dynamic state
  */
 function tryTemplateAwareUpdate(
@@ -110,57 +116,46 @@ function tryTemplateAwareUpdate(
 	const startTime = performance.now();
 	let changesCount = 0;
 
-	// Find all elements with data-testid in both old and new elements
-	const oldElements = element.querySelectorAll("[data-testid]");
-	const newElements = newElement.querySelectorAll("[data-testid]");
+	// Find all elements with data-watch in both old and new elements
+	const oldWatchElements = element.querySelectorAll("[data-watch]");
+	const newWatchElements = newElement.querySelectorAll("[data-watch]");
 
 	if (options.debugMode) {
 		console.log(
-			`🎯 Template-aware: Found ${oldElements.length} old elements and ${newElements.length} new elements with data-testid`,
+			`🎯 Template-aware: Found ${oldWatchElements.length} old and ${newWatchElements.length} new [data-watch] elements`,
 		);
 	}
 
-	// Create a map of new elements by their data-testid
-	const newElementMap = new Map<string, Element>();
-	for (const el of newElements) {
-		const testId = el.getAttribute("data-testid");
-		if (testId) {
-			newElementMap.set(testId, el);
+	// Update watch elements by position (they should match 1:1)
+	const maxLength = Math.min(oldWatchElements.length, newWatchElements.length);
+	for (let i = 0; i < maxLength; i++) {
+		const oldEl = oldWatchElements[i];
+		const newEl = newWatchElements[i];
+
+		if (options.debugMode) {
+			console.log(`🎯 Checking [data-watch] element ${i}:`);
+			console.log(`🎯   Old content: "${oldEl.textContent}"`);
+			console.log(`🎯   New content: "${newEl.textContent}"`);
 		}
-	}
 
-	// Update matching elements
-	for (const oldEl of oldElements) {
-		const testId = oldEl.getAttribute("data-testid");
-		if (testId && newElementMap.has(testId)) {
-			const newEl = newElementMap.get(testId);
-			if (!newEl) continue;
-
+		// Update text content if different
+		if (oldEl.textContent !== newEl.textContent) {
 			if (options.debugMode) {
-				console.log(`🎯 Checking element [data-testid="${testId}"]:`);
-				console.log(`🎯   Old content: "${oldEl.textContent}"`);
-				console.log(`🎯   New content: "${newEl.textContent}"`);
+				console.log(
+					`🎯 Auto-update: "${oldEl.textContent}" -> "${newEl.textContent}" in [data-watch] element ${i}`,
+				);
 			}
-
-			// Update text content if different
-			if (oldEl.textContent !== newEl.textContent) {
-				if (options.debugMode) {
-					console.log(
-						`🎯 Template-aware update: "${oldEl.textContent}" -> "${newEl.textContent}" in [data-testid="${testId}"]`,
-					);
-				}
-				oldEl.textContent = newEl.textContent;
-				changesCount++;
-			}
-
-			// Update attributes if different (but preserve event listeners)
-			const attributeChanges = updateElementAttributesIfNeeded(
-				oldEl,
-				newEl,
-				options,
-			);
-			changesCount += attributeChanges;
+			oldEl.textContent = newEl.textContent;
+			changesCount++;
 		}
+
+		// Update attributes if different (but preserve event listeners)
+		const attributeChanges = updateElementAttributesIfNeeded(
+			oldEl,
+			newEl,
+			options,
+		);
+		changesCount += attributeChanges;
 	}
 
 	return {
@@ -196,9 +191,7 @@ function updateElementAttributesIfNeeded(
 	for (const [name, value] of newAttrs) {
 		if (oldAttrs.get(name) !== value) {
 			if (options.debugMode) {
-				console.log(
-					`🎯 Updating attribute ${name}="${value}" on [data-testid="${oldElement.getAttribute("data-testid")}"]`,
-				);
+				console.log(`🎯 Updating attribute ${name}="${value}"`);
 			}
 			oldElement.setAttribute(name, value);
 			changesCount++;
@@ -209,9 +202,7 @@ function updateElementAttributesIfNeeded(
 	for (const [name] of oldAttrs) {
 		if (!newAttrs.has(name)) {
 			if (options.debugMode) {
-				console.log(
-					`🎯 Removing attribute ${name} from [data-testid="${oldElement.getAttribute("data-testid")}"]`,
-				);
+				console.log(`🎯 Removing attribute ${name}`);
 			}
 			oldElement.removeAttribute(name);
 			changesCount++;
@@ -266,16 +257,6 @@ function applyTextOnlyChanges(
 		console.log(
 			`⚡ Found ${oldTextElements.length} old text elements and ${newTextElements.length} new text elements`,
 		);
-		oldTextElements.forEach((el, i) => {
-			console.log(
-				`⚡ Old[${i}]: ${el.tagName} data-testid="${el.getAttribute("data-testid")}" text="${el.textContent}"`,
-			);
-		});
-		newTextElements.forEach((el, i) => {
-			console.log(
-				`⚡ New[${i}]: ${el.tagName} data-testid="${el.getAttribute("data-testid")}" text="${el.textContent}"`,
-			);
-		});
 	}
 
 	for (
@@ -288,12 +269,8 @@ function applyTextOnlyChanges(
 
 		if (options.debugMode) {
 			console.log(`⚡ Comparing elements at index ${i}:`);
-			console.log(
-				`⚡   Old: ${oldEl.tagName}[data-testid="${oldEl.getAttribute("data-testid")}"] = "${oldEl.textContent}"`,
-			);
-			console.log(
-				`⚡   New: ${newEl.tagName}[data-testid="${newEl.getAttribute("data-testid")}"] = "${newEl.textContent}"`,
-			);
+			console.log(`⚡   Old: ${oldEl.tagName} = "${oldEl.textContent}"`);
+			console.log(`⚡   New: ${newEl.tagName} = "${newEl.textContent}"`);
 			console.log(`⚡   Elements match: ${elementsMatch(oldEl, newEl)}`);
 			console.log(
 				`⚡   Text different: ${oldEl.textContent !== newEl.textContent}`,
@@ -391,7 +368,7 @@ function applyStructuralChanges(
 	const activeElement = options.preserveFocus ? document.activeElement : null;
 	const wasFocused = activeElement && element.contains(activeElement);
 	const focusPath = wasFocused
-		? getElementPath(activeElement as Element, element)
+		? getElementPath(activeElement as Element, element, options)
 		: null;
 
 	// Perform full DOM diffing
@@ -527,24 +504,8 @@ function isTextOnlyElement(element: Element): boolean {
 }
 
 function elementsMatch(oldEl: Element, newEl: Element): boolean {
-	// Match by data-testid if available
-	const oldTestId = oldEl.getAttribute("data-testid");
-	const newTestId = newEl.getAttribute("data-testid");
-
-	if (oldTestId && newTestId) {
-		const match = oldTestId === newTestId;
-		console.log(
-			`🔍 Matching by data-testid: "${oldTestId}" === "${newTestId}" = ${match}`,
-		);
-		return match;
-	}
-
-	// Match by tag name if no data-testid
-	const match = oldEl.tagName === newEl.tagName;
-	console.log(
-		`🔍 Matching by tagName: "${oldEl.tagName}" === "${newEl.tagName}" = ${match}`,
-	);
-	return match;
+	// Simply match by tag name since we use data-watch for identification
+	return oldEl.tagName === newEl.tagName;
 }
 
 function elementAttributesChanged(oldEl: Element, newEl: Element): boolean {
@@ -600,22 +561,19 @@ function updateElementAttributes(
 	return changesCount;
 }
 
-function getElementPath(element: Element, root: Element): string[] {
+function getElementPath(
+	element: Element,
+	root: Element,
+	options: DiffOptions,
+): string[] {
 	const path: string[] = [];
 	let current: Element | null = element;
 
 	while (current && current !== root) {
-		const testId = current.getAttribute("data-testid");
-		if (testId) {
-			path.unshift(`[data-testid="${testId}"]`);
-		} else {
-			const parent = current.parentElement;
-			if (parent) {
-				const index = Array.from(parent.children).indexOf(current);
-				path.unshift(
-					`${current.tagName.toLowerCase()}:nth-child(${index + 1})`,
-				);
-			}
+		const parent = current.parentElement;
+		if (parent) {
+			const index = Array.from(parent.children).indexOf(current);
+			path.unshift(`${current.tagName.toLowerCase()}:nth-child(${index + 1})`);
 		}
 		current = current.parentElement;
 	}

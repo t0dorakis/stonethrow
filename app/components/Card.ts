@@ -4,7 +4,7 @@ import { create } from "stone-throw/components";
 // Name will be derived from variable name (Card -> s-card)
 const Card = create("card", {
   // No state needed for this component
-  render: (state, props, children) => {
+  server: (state, props, children) => {
     const title = (props?.title as string) || "Card";
 
     return /*html*/ `

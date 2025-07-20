@@ -2,13 +2,15 @@
 import { create } from "stone-throw/components";
 
 const CodeBlock = create("code-block", {
-  render: (state, props, children) => {
+  server: (state, props, children) => {
     return /*html*/ `
       <div class="rounded-lg overflow-hidden"> 
         ${props.code}
       </div>`;
   },
-  init: () => {},
+  client: (element, state) => {
+    return () => {};
+  },
 });
 
 export default CodeBlock;
