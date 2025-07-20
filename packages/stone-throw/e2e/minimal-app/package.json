@@ -1,0 +1,11 @@
+{
+	"name": "stone-throw-test-app",
+	"type": "module",
+	"scripts": {
+		"dev": "vinxi dev",
+		"build": "vinxi build"
+	},
+	"dependencies": {
+		"vinxi": "^0.5.6"
+	}
+}
