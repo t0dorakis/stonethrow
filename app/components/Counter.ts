@@ -1,4 +1,5 @@
 import { create } from "stone-throw/components";
+import { useRerender } from "stone-throw";
 
 const Counter = create("counter", {
   // signal based state
