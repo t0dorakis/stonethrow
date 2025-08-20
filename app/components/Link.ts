@@ -1,7 +1,7 @@
 import { create } from "stone-throw/components";
 
 const Link = create("link", {
-  render: (state, props, children) => {
+  server: (state, props, children) => {
     const href = props?.href;
 
     const buttonVariant = props?.variant;

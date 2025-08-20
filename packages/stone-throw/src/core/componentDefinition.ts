@@ -1,5 +1,8 @@
 import { markComponentForRegistration } from "./registryUtils";
 import { signal } from "../state/sgnls";
+import type { SignalType } from "../state/sgnls";
+import { createRerenderScope } from "../hooks/useRerender";
+import { deepClone } from "../utils/deepClone";
 import type {
   ComponentOptions,
   Props,
@@ -103,8 +106,8 @@ export function createComponent(
     // Process children (arrays, primitives, etc.)
     const processedChildren = processChildren(children);
 
-    // Render and automatically wrap with component tag if needed
-    const renderedContent = options.render(
+    // Render with the simplified API
+    const renderedContent = options.server(
       globalStateSignals,
       props,
       processedChildren
@@ -116,6 +119,8 @@ export function createComponent(
   Component.module = () => {
     class CustomElement extends HTMLElement {
       private stateSignals: Record<string, ReturnType<typeof signal>>;
+      private effectCleanups: Set<() => void>;
+      private clientCleanup?: () => void;
 
       constructor() {
         super();
@@ -124,7 +129,7 @@ export function createComponent(
           typeof options.state === "function"
             ? options.state()
             : options.state
-            ? JSON.parse(JSON.stringify(options.state)) // Deep clone to avoid sharing  TODO: use a better approach
+            ? deepClone(options.state)
             : {};
 
         this.stateSignals = Object.fromEntries(
@@ -133,32 +138,54 @@ export function createComponent(
             signal(value),
           ])
         );
+
+        this.effectCleanups = new Set();
       }
 
       connectedCallback() {
-        if (options.init) {
-          options.init(this, this.stateSignals);
-        }
+        createRerenderScope(
+          {
+            currentElement: this,
+            renderFunction: (
+              state: Record<string, SignalType<unknown>>,
+              props: Props | undefined,
+              children: string | undefined
+            ) => {
+              return options.server(state, props, children);
+            },
+            stateSignals: this.stateSignals,
+            effectCleanups: this.effectCleanups,
+          },
+          () => {
+            // Call user client function and store cleanup
+            if (options.client) {
+              this.clientCleanup = options.client(this, this.stateSignals);
+            }
+          }
+        );
       }
 
       disconnectedCallback() {
-        if (options.cleanup) {
-          options.cleanup(this, this.stateSignals);
+        // Clean up all effects
+        for (const cleanup of this.effectCleanups) {
+          cleanup();
+        }
+        this.effectCleanups.clear();
+
+        if (this.clientCleanup) {
+          this.clientCleanup();
         }
       }
     }
 
-    // Access the name through the preserved property
     const componentName =
       (Component as ComponentWithInternalProps)._$$name || name;
 
-    // Register the custom element
     if (!customElements.get(componentName)) {
       customElements.define(componentName, CustomElement);
     }
   };
 
-  // Expose global state for SSR
   Component.state = globalStateSignals;
 
   // Server-side rendering method (alias for the main function)

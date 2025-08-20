@@ -23,7 +23,7 @@ const leftPill = /*html*/ `
     `;
 
 const NavBar = create("nav-bar", {
-  render: (state, props, children) => {
+  server: (state, props, children) => {
     return /*html*/ `
         <nav class="flex items-center gap-4 w-auto rounded-md py-1">
           ${leftPill}

@@ -9,11 +9,16 @@
     "build": "vinxi build",
     "optimize-images": "node scripts/optimize-images.mjs",
     "start": "vinxi start",
-    "build:all": "npm run build --workspaces"
+    "build:all": "npm run build --workspaces",
+    "e2e": "npm -w stone-throw run test:e2e"
   },
   "dependencies": {
+    "@babel/plugin-proposal-do-expressions": "^7.28.1",
     "@tailwindcss/vite": "^4.1.8",
+    "babel-plugin-jsx-dom-expressions": "^0.39.8",
+    "dom-expressions": "^0.39.10",
     "gsap": "^3.13.0",
+    "lit-dom-expressions": "^0.39.10",
     "sharp": "^0.34.2",
     "shiki": "^3.6.0",
     "stone-throw": "workspace:*",

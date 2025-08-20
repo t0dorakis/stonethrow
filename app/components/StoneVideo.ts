@@ -1,7 +1,7 @@
 import { create } from "stone-throw/components";
 
 const StoneVideo = create("stone-video", {
-  render: (state, props, children) => {
+  server: (state, props, children) => {
     return /*html*/ `
     <video 
       class="${props.class}" 
@@ -18,7 +18,9 @@ const StoneVideo = create("stone-video", {
     `;
   },
 
-  init: (element, state) => {},
+  client: (element, state) => {
+    return () => {};
+  },
 });
 
 export default StoneVideo;

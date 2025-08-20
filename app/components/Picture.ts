@@ -2,7 +2,7 @@ import { create } from "stone-throw/components";
 
 const Picture = create("picture", {
   // No state needed for this component
-  render: (state, props, children) => {
+  server: (state, props, children) => {
     return /*html*/ `
     <picture class="${props.class}">
       <source srcset="${props.src}-min-0.webp" type="image/webp" />
