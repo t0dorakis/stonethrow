@@ -7,9 +7,6 @@ updates:
     # Check for updates once a week
     schedule:
       interval: "weekly"
-    # Set default reviewers for pull requests
-    reviewers:
-      - "@Theodor.Hillmann"
     # Allow up to 10 open pull requests for npm dependencies
     open-pull-requests-limit: 10
     # Group all patch updates together

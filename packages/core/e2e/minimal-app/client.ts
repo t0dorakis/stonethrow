@@ -1,4 +1,4 @@
-import { initializeCustomElements } from "stone-throw/client";
+import { initializeCustomElements } from "@stonethrow/core/client";
 import { stoneComponentRegistry } from "./stone.generated";
 
 // Initialize all custom elements when the DOM is ready

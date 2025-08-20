@@ -1,4 +1,4 @@
-import { setMeta } from "stone-throw/utils";
+import { setMeta } from "@stonethrow/core/utils";
 
 /**
  * Custom 500 server error page

@@ -1,7 +1,7 @@
 import { eventHandler } from "vinxi/http";
 import TestCounter from "./components/TestCounter";
 import TestInput from "./components/TestInput";
-import { renderPage } from "stone-throw/rendering";
+import { renderPage } from "@stonethrow/core/rendering";
 
 const Page = () => {
 	return `

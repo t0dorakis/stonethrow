@@ -1,5 +1,5 @@
-import { initializeCustomElements } from "stone-throw/components";
-import { logger } from "stone-throw/utils";
+import { initializeCustomElements } from "@stonethrow/core/components";
+import { logger } from "@stonethrow/core/utils";
 import "./style.css";
 import { createHead } from "unhead/client";
 import { stoneComponentRegistry } from "./stone.generated";

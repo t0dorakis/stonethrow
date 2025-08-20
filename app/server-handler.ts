@@ -2,10 +2,10 @@
 
 import { eventHandler } from "vinxi/http";
 import routes from "vinxi/routes";
-import { logger } from "stone-throw/utils";
-import { renderPage } from "stone-throw/rendering";
-import type { PageEvent, RouteModule } from "stone-throw/routing";
-import { handleError } from "stone-throw/rendering";
+import { logger } from "@stonethrow/core/utils";
+import { renderPage } from "@stonethrow/core/rendering";
+import type { PageEvent, RouteModule } from "@stonethrow/core/routing";
+import { handleError } from "@stonethrow/core/rendering";
 const log = logger.withTag("pages-router");
 
 export default eventHandler({

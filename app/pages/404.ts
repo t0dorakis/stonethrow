@@ -1,4 +1,4 @@
-import { setMeta } from "stone-throw/utils";
+import { setMeta } from "@stonethrow/core/utils";
 
 /**
  * Custom 404 page that can be freely customized

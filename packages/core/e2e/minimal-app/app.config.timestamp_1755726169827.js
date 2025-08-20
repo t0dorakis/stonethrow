@@ -1,13 +1,13 @@
+// app.config.js
 import { createApp } from "vinxi";
-import stoneAutoRegistry from "vite-plugin-stone-auto-registry";
-
-export default createApp({
+import stoneAutoRegistry from "@stonethrow/core/vite-plugin-auto-registry";
+var app_config_default = createApp({
   routers: [
     {
       name: "public",
       type: "static",
       dir: "./public",
-      base: "/",
+      base: "/"
     },
     {
       name: "client",
@@ -16,26 +16,30 @@ export default createApp({
       plugins: () => [
         stoneAutoRegistry({
           componentsDir: "components",
-          output: "stone.generated.ts", // Match the exact import path
-        }),
+          output: "stone.generated.ts"
+          // Match the exact import path
+        })
       ],
       build: {
         target: "browser",
         outDir: "./.vinxi/build/client",
         rollupOptions: {
           output: {
-            manualChunks: undefined,
-          },
-        },
+            manualChunks: void 0
+          }
+        }
       },
       base: "/_build",
-      target: "browser",
+      target: "browser"
     },
     {
       name: "server",
       type: "http",
       target: "server",
-      handler: "./server.ts",
-    },
-  ],
+      handler: "./server.ts"
+    }
+  ]
 });
+export {
+  app_config_default as default
+};

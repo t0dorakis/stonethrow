@@ -1,16 +1,55 @@
+# Build outputs
 .output
-.env
 .vinxi
 .vercel
-node_modules
-.DS_Store
+.next
+dist/
+build/
 
+# Environment and config
+.env
+.env.local
+.env.production
+.env.development
+
+# Dependencies
+node_modules/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor files
 .vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Development files
 _proto-scripts/
 
-# ignore all generated files
+# Turborepo
+.turbo/
+
+# Generated files
 *.generated.ts
 
-# ignore workspace dist files
-/packages/stone-throw/dist/
-/packages/vite-plugin-stone-auto-registry/dist/
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Package manager lockfiles (keep package-lock.json but ignore others if switching)
+# yarn.lock
+# pnpm-lock.yaml
+
+# Workspace dist files (updated paths)
+/packages/core/dist/
+/packages/vite-plugin-auto-registry/dist/

@@ -1,5 +1,5 @@
 {
-	"name": "stone-throw",
+	"name": "@stonethrow/core",
 	"version": "0.1.0",
 	"description": "Stone Throw - A modern web framework built on standards",
 	"type": "module",
@@ -58,7 +58,7 @@
 		"@vinxi/router": "^0.5.1",
 		"vinxi": "^0.5.6",
 		"vite": "^6.3.5",
-		"vite-plugin-stone-auto-registry": "file:../vite-plugin-stone-auto-registry"
+		"@stonethrow/vite-plugin-auto-registry": "*"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.48.2",
