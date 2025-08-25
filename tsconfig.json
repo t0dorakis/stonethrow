@@ -1,20 +1,20 @@
 {
-	"compilerOptions": {
-		"target": "ES2020",
-		"module": "esnext",
-		"moduleResolution": "bundler",
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"resolveJsonModule": true,
-		"baseUrl": ".",
-		"paths": {
-			"@stonethrow": ["packages/core/src/index.ts"],
-			"@stonethrow/*": ["packages/core/src/*"],
-			"@stonethrow/vite-plugin-auto-registry": [
-				"packages/vite-plugin-auto-registry/src/index.ts"
-			]
-		}
-	},
-	"include": ["app/**/*", "packages/**/*"],
-	"exclude": ["node_modules", "**/node_modules/*", "**/dist/*", "**/public/*"]
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@stonethrow/core": ["packages/core/src/index.ts"],
+      "@stonethrow/core/*": ["packages/core/src/*"],
+      "@stonethrow/vite-plugin-auto-registry": [
+        "packages/vite-plugin-auto-registry/src/index.ts"
+      ]
+    }
+  },
+  "include": ["app/**/*", "packages/**/*"],
+  "exclude": ["node_modules", "**/node_modules/*", "**/dist/*", "**/public/*"]
 }
