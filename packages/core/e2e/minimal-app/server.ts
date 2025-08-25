@@ -4,7 +4,7 @@ import TestInput from "./components/TestInput";
 import { renderPage } from "@stonethrow/core/rendering";
 
 const Page = () => {
-	return `
+  return `
     <body>
       <h1>Stone Throw useRerender Test</h1>
       ${TestCounter()}
@@ -14,10 +14,10 @@ const Page = () => {
   `;
 };
 export default eventHandler({
-	handler: async (event) => {
-		console.log("Server handling request for:", event.path);
+  handler: async (event) => {
+    console.log("Server handling request for:", event.path);
 
-		// Render the test counter component
-		return await renderPage(Page, event);
-	},
+    // Render the test counter component
+    return await renderPage(Page, event);
+  },
 });

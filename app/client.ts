@@ -1,4 +1,4 @@
-import { initializeCustomElements } from "@stonethrow/core/components";
+import { initializeCustomElements } from "@stonethrow/core/client";
 import { logger } from "@stonethrow/core/utils";
 import "./style.css";
 import { createHead } from "unhead/client";

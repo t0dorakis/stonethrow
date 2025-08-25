@@ -1,4 +1,5 @@
-import { create, useRerender } from "@stonethrow/core/client";
+import { create } from "@stonethrow/core/components";
+import { useRerender } from "@stonethrow/core/client";
 
 const TestCounter = create("test-counter", {
 	state: () => ({ count: 0 }),

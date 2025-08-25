@@ -8,8 +8,8 @@
 		"resolveJsonModule": true,
 		"baseUrl": ".",
 		"paths": {
-			"@stonethrow/core": ["packages/core/src/index.ts"],
-			"@stonethrow/core/*": ["packages/core/src/*"],
+			"@stonethrow": ["packages/core/src/index.ts"],
+			"@stonethrow/*": ["packages/core/src/*"],
 			"@stonethrow/vite-plugin-auto-registry": [
 				"packages/vite-plugin-auto-registry/src/index.ts"
 			]

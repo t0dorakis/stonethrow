@@ -1,13 +1,13 @@
 {
-	"name": "stone-throw-test-app",
-	"type": "module",
-	"scripts": {
-		"dev": "vinxi dev",
-		"build": "vinxi build"
-	},
-	"dependencies": {
-		"vinxi": "^0.5.6",
-		"@stonethrow/core": "*",
-		"@stonethrow/vite-plugin-auto-registry": "*"
-	}
+  "name": "stone-throw-test-app",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build"
+  },
+  "dependencies": {
+    "vinxi": "^0.5.6",
+    "@stonethrow/core": "*",
+    "@stonethrow/vite-plugin-auto-registry": "*"
+  }
 }
