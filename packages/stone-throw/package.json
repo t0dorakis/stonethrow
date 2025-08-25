@@ -65,7 +65,7 @@
 		"@types/node": "^22.15.30",
 		"concurrently": "^9.1.2",
 		"typescript": "^5.0.0",
-		"unbuild": "^3.5.0",
+		"unbuild": "^3.6.1",
 		"vite": "^6.3.5",
 		"vitest": "^3.2.4",
 		"wait-on": "^8.0.4"
