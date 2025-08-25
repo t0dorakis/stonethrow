@@ -1,4 +1,4 @@
-import { create } from "@stonethrow/components";
+import { create } from "@stonethrow/core/components";
 
 const Picture = create("picture", {
   // No state needed for this component

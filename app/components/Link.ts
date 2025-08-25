@@ -1,4 +1,4 @@
-import { create } from "@stonethrow/components";
+import { create } from "@stonethrow/core/components";
 
 const Link = create("link", {
   server: (state, props, children) => {
