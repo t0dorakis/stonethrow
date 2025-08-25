@@ -302,7 +302,7 @@ Stone Throw shares philosophical alignment with the Enhance framework in its foc
 Create components with a clean, declarative API:
 
 ```typescript
-import { create } from "stone-throw/components";
+import { create } from "@stonethrow/core/components";
 
 // The component tag name is derived from the variable name
 // Counter -> <s-counter>, MiniButton -> <mini-button>

@@ -1,4 +1,5 @@
-import { create, useRerender } from "stone-throw/client";
+import { create } from "@stonethrow/core/components";
+import { useRerender } from "@stonethrow/core/client";
 
 const TestInput = create("test-input", {
   state: () => ({ inputValue: "", displayText: "" }),
@@ -10,15 +11,16 @@ const TestInput = create("test-input", {
 				<input 
 					type="text" 
 					id="text-input"
+					data-testid="text-input"
 					data-watch
 					placeholder="Type something..."
 				/>
 				
-				<button id="clear-btn" data-watch>Clear</button>
+				<button id="clear-btn" data-testid="clear-btn" data-watch>Clear</button>
 			</div>
 						<div>
-				<p>Display: <span id="display-text" data-watch>${state.inputValue.get()}</span></p>
-				<p>Character count: <span id="char-count" data-watch>${
+				<p>Display: <span id="display-text" data-testid="display-text" data-watch>${state.inputValue.get()}</span></p>
+				<p>Character count: <span id="char-count" data-testid="char-count" data-watch>${
           (state.inputValue.get() as string).length
         }</span></p>
 			</div>

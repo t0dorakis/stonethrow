@@ -1,11 +1,11 @@
-import { setMeta } from "stone-throw/utils";
+import { setMeta } from "@stonethrow/core";
 
 /**
  * Custom 404 page that can be freely customized
  * Will be rendered inside an HTML document with client assets and framework initialization
  */
 const NotFoundPage = () => {
-	return /*html*/ `
+  return /*html*/ `
     <body>
       <div class="error-container">
         <h1>404 - Page Not Found</h1>
@@ -17,11 +17,11 @@ const NotFoundPage = () => {
 };
 
 export const Meta = setMeta({
-	title: "Page Not Found | Stone Throw",
-	metaTags: [
-		{ name: "description", content: "404 - Page not found" },
-		{ name: "robots", content: "noindex, nofollow" },
-	],
+  title: "Page Not Found | Stone Throw",
+  metaTags: [
+    { name: "description", content: "404 - Page not found" },
+    { name: "robots", content: "noindex, nofollow" },
+  ],
 });
 
 export default NotFoundPage;

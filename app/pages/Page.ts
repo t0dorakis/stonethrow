@@ -1,6 +1,6 @@
 import Link from "../components/Link";
 import StoneVideo from "../components/StoneVideo";
-import { setMeta } from "stone-throw/utils";
+import { setMeta } from "@stonethrow/core";
 import getCodeSnippets from "../data/getCodeSnippets";
 import CodeBlock from "../components/CodeBlock";
 import Counter from "../components/Counter";

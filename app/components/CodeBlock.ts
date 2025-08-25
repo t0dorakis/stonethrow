@@ -1,5 +1,5 @@
 // app/components/CodeBlock.ts
-import { create } from "stone-throw/components";
+import { create } from "@stonethrow/core/components";
 
 const CodeBlock = create("code-block", {
   server: (state, props, children) => {

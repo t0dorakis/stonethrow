@@ -3,9 +3,10 @@ description: Stone Throw Framework Development Guidelines
 globs: *.ts *.tsx *.js *.json *.md *.mdc
 alwaysApply: false
 ---
+
 # Stone Throw Framework Development Guidelines
 
-# Framework Positioning & Inspiration
+## Framework Positioning & Inspiration
 
 - **Philosophy**: SSR-first, progressive enhancement, inspired by Enhance but leverages modern UnJS tools
 
@@ -25,7 +26,7 @@ alwaysApply: false
 
   // generated file by our vite plugin
   import { stoneComponentRegistry } from "./stone.generated";
-  import { initializeCustomElements } from "stone-throw/client";
+  import { initializeCustomElements } from "@stonethrow/core/client";
 
   // on dom init
   // this function compares the import file with a list of component names that were set in SSR context on a Page.ts level (window.__STONE__)
@@ -39,32 +40,32 @@ alwaysApply: false
 ## Component Creation
 
 - Components are created using the `create` function from "stone-throw/components"
-- Import pattern: `import { create } from "stone-throw/components"`
+- Import pattern: `import { create } from "@stonethrow/core/components"`
 
 ```ts
-import { create } from "stone-throw/components";
+import { create } from "@stonethrow/core/components";
 
 const MyComponent = create("my-component", {
   state: () => ({ count: 0 }),
   render: (state, props, children) => `<div>${state.count.get()}</div>`,
   init: (element, state) => {
     // Client-side enhancement
-  }
+  },
 });
 ```
 
 ## Important Files
 
 - `app/client.ts`: Client entry point
-- `app/pages-router.ts`: Server entry point  
+- `app/pages-router.ts`: Server entry point
 - `app.config.json`: defines the entry points (vinxi)
 
 ## Package Imports
 
 All Stone Throw functionality is imported from the "stone-throw" package:
 
-- `import { create } from "stone-throw/components"` - Component creation
-- `import { initializeCustomElements } from "stone-throw/client"` - Client registration
+- `import { create } from "@stonethrow/core/components"` - Component creation
+- `import { initializeCustomElements } from "@stonethrow/core/client"` - Client registration
 - Core framework logic is encapsulated in the node module
 
 ## State Management
@@ -99,7 +100,3 @@ All Stone Throw functionality is imported from the "stone-throw" package:
   1. A router config in app.config.js that points to a handler
   2. A page loader utility that maps URL paths to page files
   3. A convention of putting Page.ts at each path level
-
-```
-
-```

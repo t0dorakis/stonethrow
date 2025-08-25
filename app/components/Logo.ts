@@ -1,4 +1,4 @@
-import { create } from "stone-throw/components";
+import { create } from "@stonethrow/core/components";
 
 const Logo = create("logo", {
   server: (state, props, children) => {

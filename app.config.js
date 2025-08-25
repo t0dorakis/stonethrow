@@ -1,8 +1,8 @@
 import { createApp } from "vinxi";
 import { resolve } from "node:path";
-import { PagesRouter } from "stone-throw/routing";
+import { PagesRouter } from "@stonethrow/core/routing";
 import tailwindcss from "@tailwindcss/vite";
-import stoneAutoRegistry from "vite-plugin-stone-auto-registry";
+import stoneAutoRegistry from "@stonethrow/vite-plugin-auto-registry";
 
 const getPreset = () => {
   if (process.env.VERCEL === "1") {

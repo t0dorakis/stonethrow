@@ -1,4 +1,4 @@
-import { create, useRerender } from "stone-throw/client";
+import { create, useRerender } from "@stonethrow/core/client";
 
 const Counter = create("counter", {
   state: () => ({ count: 0 }),

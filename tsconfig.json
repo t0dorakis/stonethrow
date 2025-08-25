@@ -8,10 +8,10 @@
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
-      "stone-throw": ["packages/stone-throw/src/index.ts"],
-      "stone-throw/*": ["packages/stone-throw/src/*"],
-      "vite-plugin-stone-auto-registry": [
-        "packages/vite-plugin-stone-auto-registry/src/index.ts"
+      "@stonethrow/core": ["packages/core/src/index.ts"],
+      "@stonethrow/core/*": ["packages/core/src/*"],
+      "@stonethrow/vite-plugin-auto-registry": [
+        "packages/vite-plugin-auto-registry/src/index.ts"
       ]
     }
   },

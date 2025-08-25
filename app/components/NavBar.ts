@@ -1,4 +1,4 @@
-import { create } from "stone-throw/components";
+import { create } from "@stonethrow/core/components";
 import Logo from "./Logo";
 
 const navItems = [

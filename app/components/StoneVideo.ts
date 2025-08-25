@@ -1,4 +1,4 @@
-import { create } from "stone-throw/components";
+import { create } from "@stonethrow/core/components";
 
 const StoneVideo = create("stone-video", {
   server: (state, props, children) => {
