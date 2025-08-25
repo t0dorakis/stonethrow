@@ -8,8 +8,8 @@ test.describe("Stone Throw useRerender functionality", () => {
     await page.goto("/");
 
     // Verify server-side rendering worked
-    await expect(page.locator('[data-testid="count-display"]')).toHaveText("0");
-    await expect(page.locator('[data-testid="increment-btn"]')).toBeVisible();
+    await expect(page.locator("#count-display")).toHaveText("0");
+    await expect(page.locator("#increment-btn")).toBeVisible();
 
     // Wait for client-side paint
     await page.waitForLoadState("networkidle");
