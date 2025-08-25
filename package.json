@@ -20,7 +20,7 @@
     "gsap": "^3.13.0",
     "lit-dom-expressions": "^0.39.10",
     "sharp": "^0.34.2",
-    "shiki": "^3.6.0",
+    "shiki": "^3.11.0",
     "stone-throw": "workspace:*",
     "tailwindcss": "^4.1.6",
     "unhead": "^2.0.10",
