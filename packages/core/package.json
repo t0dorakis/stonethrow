@@ -50,7 +50,7 @@
   ],
   "dependencies": {
     "consola": "^3.4.2",
-    "dom-expressions": "^0.39.10",
+    "dom-expressions": "^0.40.2",
     "lit-dom-expressions": "^0.39.10",
     "scule": "^1.3.0",
     "unctx": "^2.4.1",
