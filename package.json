@@ -15,7 +15,7 @@
   "dependencies": {
     "@babel/plugin-proposal-do-expressions": "^7.28.1",
     "@tailwindcss/vite": "^4.1.8",
-    "babel-plugin-jsx-dom-expressions": "^0.39.8",
+    "babel-plugin-jsx-dom-expressions": "^0.40.1",
     "dom-expressions": "^0.39.10",
     "gsap": "^3.13.0",
     "lit-dom-expressions": "^0.39.10",
