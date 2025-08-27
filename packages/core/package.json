@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.48.2",
-    "@types/node": "^22.15.30",
+    "@types/node": "^24.3.0",
     "concurrently": "^9.1.2",
     "typescript": "^5.0.0",
     "unbuild": "^3.5.0",
