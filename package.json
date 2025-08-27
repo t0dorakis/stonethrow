@@ -1,38 +1,35 @@
 {
-	"private": true,
-	"type": "module",
-	"workspaces": ["packages/*", "packages/core/e2e/minimal-app"],
-	"scripts": {
-		"dev": "turbo run build --filter=@stonethrow/core --filter=@stonethrow/vite-plugin-auto-registry && vinxi dev",
-		"dev:all": "turbo run dev --parallel",
-		"build": "vinxi build",
-		"build:all": "turbo run build",
-		"start": "vinxi start",
-		"e2e": "npm -w @stonethrow/core run test:e2e"
-	},
-	"dependencies": {
-		"@babel/plugin-proposal-do-expressions": "^7.28.3",
-		"@tailwindcss/vite": "^4.1.12",
-		"babel-plugin-jsx-dom-expressions": "^0.39.8",
-		"dom-expressions": "^0.39.10",
-		"gsap": "^3.13.0",
-		"lit-dom-expressions": "^0.39.10",
-		"sharp": "^0.34.3",
-		"shiki": "^3.6.0",
-		"@stonethrow/core": "*",
-		"tailwindcss": "^4.1.6",
-		"unhead": "^2.0.14",
-		"vinxi": "^0.5.8",
-		"@stonethrow/vite-plugin-auto-registry": "*"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.2",
-		"@types/node": "^22.15.30",
-		"typescript": "^5.7.3",
-		"turbo": "^1.12.0",
-		"@stonethrow/vite-plugin-auto-registry": "*"
-	},
-	"optionalDependencies": {
-		"@rollup/rollup-linux-x64-gnu": "^4.6.1"
-	}
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "packages/core/e2e/minimal-app"
+  ],
+  "scripts": {
+    "dev": "turbo run build --filter=@stonethrow/core --filter=@stonethrow/vite-plugin-auto-registry && vinxi dev",
+    "dev:all": "turbo run dev --parallel",
+    "build": "vinxi build",
+    "build:all": "turbo run build",
+    "start": "vinxi start",
+    "e2e": "npm -w @stonethrow/core run test:e2e"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.12",
+    "sharp": "^0.34.3",
+    "shiki": "^3.6.0",
+    "@stonethrow/core": "*",
+    "tailwindcss": "^4.1.6",
+    "unhead": "^2.0.14",
+    "vinxi": "^0.5.8",
+    "@stonethrow/vite-plugin-auto-registry": "*"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@types/node": "^22.15.30",
+    "typescript": "^5.7.3",
+    "turbo": "^1.12.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.6.1"
+  }
 }
