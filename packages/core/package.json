@@ -57,7 +57,7 @@
   "peerDependencies": {
     "@vinxi/router": "^0.5.1",
     "vinxi": "^0.5.6",
-    "vite": "^6.3.5",
+    "vite": "^7.1.3",
     "@stonethrow/vite-plugin-auto-registry": "*"
   },
   "devDependencies": {
@@ -66,7 +66,7 @@
     "concurrently": "^9.1.2",
     "typescript": "^5.0.0",
     "unbuild": "^3.5.0",
-    "vite": "^6.3.5",
+    "vite": "^7.1.3",
     "vitest": "^3.2.2",
     "wait-on": "^8.0.3"
   }
