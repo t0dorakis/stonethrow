@@ -24,7 +24,7 @@
     "@stonethrow/vite-plugin-auto-registry": "*"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.2",
+    "@biomejs/biome": "2.3.1",
     "@types/node": "^24.3.0",
     "typescript": "^5.7.3",
     "turbo": "^1.12.0"
