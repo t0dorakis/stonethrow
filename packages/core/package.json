@@ -61,7 +61,7 @@
     "@stonethrow/vite-plugin-auto-registry": "*"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.2",
+    "@playwright/test": "^1.56.1",
     "@types/node": "^24.3.0",
     "concurrently": "^9.1.2",
     "typescript": "^5.0.0",
