@@ -52,7 +52,7 @@
     "consola": "^3.4.2",
     "scule": "^1.3.0",
     "unctx": "^2.4.1",
-    "unhead": "^2.0.10"
+    "unhead": "^2.0.19"
   },
   "peerDependencies": {
     "@vinxi/router": "^0.5.1",
@@ -64,7 +64,7 @@
     "@playwright/test": "^1.48.2",
     "@types/node": "^24.3.0",
     "concurrently": "^9.1.2",
-    "typescript": "^5.0.0",
+    "typescript": "^5.9.3",
     "unbuild": "^3.5.0",
     "vite": "^7.1.3",
     "vitest": "^3.2.2",
