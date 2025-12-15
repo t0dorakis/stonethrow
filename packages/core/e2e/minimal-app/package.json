@@ -6,7 +6,7 @@
     "build": "vinxi build"
   },
   "dependencies": {
-    "vinxi": "^0.5.6",
+    "vinxi": "^0.5.9",
     "@stonethrow/core": "*",
     "@stonethrow/vite-plugin-auto-registry": "*"
   }
